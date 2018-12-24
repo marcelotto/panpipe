@@ -30,7 +30,7 @@ end
 # Header
 
 defmodule Panpipe.AST.Header do
-  use Panpipe.AST.Node, type: :block, fields: [:level, :attr]
+  use Panpipe.AST.Node, type: :block, fields: [:level, attr: ["", [], []]]
 
   def to_pandoc(%Panpipe.AST.Header{level: level, children: children, attr: attr}) do
     %{
@@ -45,7 +45,7 @@ defimpl_ex Panpipe.Pandoc.Header, %{"t" => "Header"}, for: Panpipe.Pandoc.AST.No
     %Panpipe.AST.Header{
       level: level,
       children: children |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
-      attr: nil, # TODO: attr
+      # TODO: attr:
     }
   end
 end
@@ -81,10 +81,7 @@ defmodule Panpipe.AST.BulletList do
   def to_pandoc(%Panpipe.AST.BulletList{children: children}) do
     %{
       "t" => "BulletList",
-      "c" =>
-        Enum.map(children, fn child_block ->
-          Enum.map(child_block, &Panpipe.AST.Node.to_pandoc/1)
-        end)
+      "c" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)
     }
   end
 end
@@ -219,7 +216,7 @@ end
 # Link Attr [Inline] Target - Hyperlink: alt text (list of inlines), target
 
 defmodule Panpipe.AST.Link do
-  use Panpipe.AST.Node, type: :inline, fields: [:text, :target, :title, :attr]
+  use Panpipe.AST.Node, type: :inline, fields: [:text, :target, title: "", attr: ["", [], []]]
 
   def children(%Panpipe.AST.Link{text: node_seq}), do: node_seq
 
@@ -241,7 +238,7 @@ defimpl_ex Panpipe.Pandoc.Link, %{"t" => "Link"}, for: Panpipe.Pandoc.AST.Node d
       text: alt_text |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
       target: target,
       title: title,
-      attr: nil, # TODO: attr
+      # TODO: attr:
     }
   end
 end

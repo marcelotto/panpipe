@@ -4,9 +4,18 @@ defmodule Panpipe.Document do
   def to_pandoc(%Panpipe.Document{children: children, meta: meta}) do
     %{
       "blocks" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1),
-      "meta" => meta,
+      "meta" => %{}, # TODO: meta
       "pandoc-api-version" => Panpipe.Pandoc.api_version(),
     }
+  end
+
+
+  def fragment(%{block: true} = node) do
+    %__MODULE__{children: [node]}
+  end
+
+  def fragment(nodes) do
+    fragment(%Panpipe.AST.Plain{children: List.wrap(nodes)})
   end
 end
 
