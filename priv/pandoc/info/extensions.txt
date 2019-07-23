@@ -64,6 +64,7 @@
 +subscript
 +superscript
 -styles
++task_lists
 +table_captions
 +tex_math_dollars
 -tex_math_double_backslash

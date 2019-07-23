@@ -2,11 +2,13 @@ commonmark
 creole
 docbook
 docx
+dokuwiki
 epub
 fb2
 gfm
 haddock
 html
+ipynb
 jats
 json
 latex
