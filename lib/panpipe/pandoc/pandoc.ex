@@ -62,20 +62,19 @@ defmodule Panpipe.Pandoc do
 
   Other than that the only difference are a couple of default values:
 
-  - If no output file or format is specified the output format will default to `json`
   - Flag options must provide a `true` value, eg. the verbose option can be set
     with the option `verbose: true`
 
   ## Examples
 
-      iex> "# A Markdown Document\\n..." |> Panpipe.Pandoc.call()
-      {:ok, "{\\"blocks\\":[{\\"t\\":\\"Header\\",\\"c\\":[1,[\\"a-markdown-document\\",[],[]],[{\\"t\\":\\"Str\\",\\"c\\":\\"A\\"},{\\"t\\":\\"Space\\"},{\\"t\\":\\"Str\\",\\"c\\":\\"Markdown\\"},{\\"t\\":\\"Space\\"},{\\"t\\":\\"Str\\",\\"c\\":\\"Document\\"}]]},{\\"t\\":\\"Para\\",\\"c\\":[{\\"t\\":\\"Str\\",\\"c\\":\\"…\\"}]}],\\"pandoc-api-version\\":[1,17,5,4],\\"meta\\":{}}\\n"}
+      iex> "# A Markdown Document\\nLorem ipsum" |> Panpipe.Pandoc.call()
+      {:ok, ~s[<h1 id=\"a-markdown-document\">A Markdown Document</h1>\\n<p>Lorem ipsum</p>\\n]}
 
       iex> "# A Markdown Document\\n..." |> Panpipe.Pandoc.call(output: "test/output/example.html")
       {:ok, nil}
 
       iex> Panpipe.Pandoc.call(input: "test/fixtures/example.md")
-      {:ok, "{\\"blocks\\":[{\\"t\\":\\"Header\\",\\"c\\":[1,[\\"a-markdown-document\\",[],[]],[{\\"t\\":\\"Str\\",\\"c\\":\\"A\\"},{\\"t\\":\\"Space\\"},{\\"t\\":\\"Str\\",\\"c\\":\\"Markdown\\"},{\\"t\\":\\"Space\\"},{\\"t\\":\\"Str\\",\\"c\\":\\"Document\\"}]]},{\\"t\\":\\"Para\\",\\"c\\":[{\\"t\\":\\"Str\\",\\"c\\":\\"…\\"}]}],\\"pandoc-api-version\\":[1,17,5,4],\\"meta\\":{}}\\n"}
+      {:ok, ~s[<h1 id=\"a-markdown-document\">A Markdown Document</h1>\\n<p>Lorem ipsum</p>\\n]}
 
       iex> Panpipe.Pandoc.call(input: "test/fixtures/example.md", output: "test/output/example.html")
       {:ok, nil}
@@ -129,7 +128,6 @@ defmodule Panpipe.Pandoc do
 
   defp build_opts(opts) do
     opts
-    |> set_output_format()
     |> Enum.map(&build_opt/1)
   end
 
@@ -138,17 +136,6 @@ defmodule Panpipe.Pandoc do
 
   defp build_opt(opt) when is_atom(opt),
     do: "--#{opt |> to_string() |> String.replace("_", "-")}"
-
-  defp set_output_format(opts) do
-    if Keyword.has_key?(opts, :to) or Keyword.has_key?(opts, :write) or
-       Keyword.has_key?(opts, :output)
-    do
-      opts
-    else
-      Keyword.put(opts, :to, "json")
-    end
-  end
-
 
   def ast(opts) do
     with {:ok, json} <- to_json(opts) do
