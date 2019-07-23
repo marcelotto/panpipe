@@ -33,6 +33,17 @@ defmodule Panpipe.Pandoc do
   @highlight_languages_file Path.join(@info_path, "highlight-languages.txt")
   @highlight_styles_file    Path.join(@info_path, "highlight-styles.txt")
 
+  @doc false
+  def input_formats_file, do: @input_formats_file
+  @doc false
+  def output_formats_file, do: @output_formats_file
+  @doc false
+  def extensions_file, do: @extensions_file
+  @doc false
+  def highlight_languages_file, do: @highlight_languages_file
+  @doc false
+  def highlight_styles_file, do: @highlight_styles_file
+
   @external_resource @input_formats_file
   @external_resource @output_formats_file
   @external_resource @extensions_file
