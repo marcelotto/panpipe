@@ -39,7 +39,9 @@ defmodule Panpipe.AST.Node do
                  |> Jason.encode!()
                  |> Panpipe.Pandoc.call(Keyword.put(opts, :from, :json))
           do
-            String.trim(result)
+            if result do
+              Panpipe.Pandoc.Conversion.Utils.post_process(result)
+            end
           else
             _ -> nil
           end
