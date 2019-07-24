@@ -139,6 +139,8 @@ defmodule Panpipe.Pandoc do
 
   defp build_opts(opts) do
     opts
+    |> set_format_extensions(:to)
+    |> set_format_extensions(:from)
     |> Enum.map(&build_opt/1)
   end
 
@@ -155,5 +157,35 @@ defmodule Panpipe.Pandoc do
   end
 
   def to_json(opts), do: opts |> Keyword.put(:to, "json") |> call()
+  defp set_format_extensions(opts, key) do
+    if format_extensions = format_extensions(Keyword.get(opts, key)) do
+      Keyword.put(opts, key, format_extensions)
+    else
+      opts
+    end
+  end
+
+  defp format_extensions({format, extensions}) when is_list(extensions) do
+    format_extensions({format, %{enable: extensions}})
+  end
+
+  defp format_extensions({format, %{} = extensions}) do
+    to_string(format) <>
+    extension_seq(extensions[:enable], "+") <>
+    extension_seq(extensions[:disable], "-")
+  end
+
+  defp format_extensions(_), do: nil
+
+  defp extension_seq([], _), do: ""
+  defp extension_seq(nil, _), do: ""
+  defp extension_seq(extensions, prefix) do
+    prefix <> (
+      extensions
+      |> Enum.map(&to_string/1)
+      |> Enum.intersperse(prefix)
+      |> Enum.join()
+    )
+  end
 
 end
