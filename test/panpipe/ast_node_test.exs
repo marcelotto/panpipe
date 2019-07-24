@@ -9,7 +9,7 @@ defmodule Panpipe.Pandoc.AST.NodeTest do
       }
 
       assert Panpipe.Pandoc.AST.Node.to_panpipe(example_header) ==
-               %Panpipe.AST.Header{level: 1, attr: ["", [], []], children: [%Panpipe.AST.Str{string: "Foo"}]}
+               %Panpipe.AST.Header{level: 1, attr: ["foo", [], []], children: [%Panpipe.AST.Str{string: "Foo"}]}
     end
   end
 
