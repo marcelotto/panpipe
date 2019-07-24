@@ -150,13 +150,6 @@ defmodule Panpipe.Pandoc do
   defp build_opt(opt) when is_atom(opt),
     do: "--#{opt |> to_string() |> String.replace("_", "-")}"
 
-  def ast(opts) do
-    with {:ok, json} <- to_json(opts) do
-      Jason.decode(json)
-    end
-  end
-
-  def to_json(opts), do: opts |> Keyword.put(:to, "json") |> call()
   defp set_format_extensions(opts, key) do
     if format_extensions = format_extensions(Keyword.get(opts, key)) do
       Keyword.put(opts, key, format_extensions)
@@ -188,4 +181,9 @@ defmodule Panpipe.Pandoc do
     )
   end
 
+  def ast(opts) do
+    with {:ok, json} <- opts |> Keyword.put(:to, "json") |> call() do
+      Jason.decode(json)
+    end
+  end
 end
