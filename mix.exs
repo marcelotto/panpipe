@@ -23,7 +23,11 @@ defmodule Panpipe.MixProject do
       {:porcelain, "~> 2.0"},
       {:jason, "~> 1.0"},
       {:protocol_ex, "~> 0.4"},
-      {:stream_data, "~> 0.4", only: :test}
+      {:stream_data, "~> 0.4", only: :test},
+
+      # Development
+      {:credo, "~> 1.1",   only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.21", only: :dev, runtime: false},
     ]
   end
 end
