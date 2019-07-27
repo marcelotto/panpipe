@@ -969,7 +969,7 @@ defmodule Panpipe.AST.Span do
   end
 end
 
-defimpl_ex Panpipe.Pandoc.Div, %{"t" => "Span"}, for: Panpipe.Pandoc.AST.Node do
+defimpl_ex Panpipe.Pandoc.Span, %{"t" => "Span"}, for: Panpipe.Pandoc.AST.Node do
   @moduledoc false
 
   def to_panpipe(%{"c" => [attr, text]}) do
