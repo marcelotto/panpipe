@@ -91,11 +91,8 @@ defmodule Panpipe.Pandoc do
       {:ok, nil}
 
   """
-  def call(input) when is_binary(input) do
-    Keyword.new(input: {:data, input}) |> call()
-  end
-
-  def call(opts) do
+  def call(input_or_opts, opts \\ nil) do
+    opts = normalize_opts(input_or_opts, opts)
     with %Porcelain.Result{status: 0} = result <- exec(opts) do
       {:ok, output(result, opts)}
     else
@@ -104,9 +101,13 @@ defmodule Panpipe.Pandoc do
     end
   end
 
-  def call(input, opts) do
-    opts |> Keyword.put(:input, {:data, input}) |> call()
+  defp normalize_opts(input, opts) when is_binary(input) do
+    opts
+    |> List.wrap()
+    |> Keyword.put(:input, {:data, input})
   end
+
+  defp normalize_opts(opts, nil) when is_list(opts), do: opts
 
   defp exec(opts) do
     case Keyword.pop(opts, :input) do
@@ -181,7 +182,8 @@ defmodule Panpipe.Pandoc do
     )
   end
 
-  def ast(opts) do
+  def ast(input_or_opts, opts \\ nil) do
+    opts = normalize_opts(input_or_opts, opts)
     with {:ok, json} <- opts |> Keyword.put(:to, "json") |> call() do
       Jason.decode(json)
     end
