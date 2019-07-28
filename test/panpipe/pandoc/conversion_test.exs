@@ -145,37 +145,37 @@ defmodule Panpipe.Pandoc.ConversionTest do
   end
 
   test "AST.Emph" do
-    emph = %Panpipe.AST.Emph{text: %Panpipe.AST.Str{string: "Example"}}
+    emph = %Panpipe.AST.Emph{children: %Panpipe.AST.Str{string: "Example"}}
     assert Panpipe.Pandoc.Conversion.convert(emph, to: :markdown) == "*Example*"
     assert Panpipe.Pandoc.Conversion.convert(emph, to: :plain) == "_Example_"
   end
 
   test "AST.Strong" do
-    strong = %Panpipe.AST.Strong{text: %Panpipe.AST.Str{string: "Example"}}
+    strong = %Panpipe.AST.Strong{children: %Panpipe.AST.Str{string: "Example"}}
     assert Panpipe.Pandoc.Conversion.convert(strong, to: :markdown) == "**Example**"
     assert Panpipe.Pandoc.Conversion.convert(strong, to: :plain) == "EXAMPLE"
   end
 
   test "AST.Strikeout" do
-    strikeout = %Panpipe.AST.Strikeout{text: %Panpipe.AST.Str{string: "Example"}}
+    strikeout = %Panpipe.AST.Strikeout{children: %Panpipe.AST.Str{string: "Example"}}
     assert Panpipe.Pandoc.Conversion.convert(strikeout, to: :markdown) == "~~Example~~"
     assert Panpipe.Pandoc.Conversion.convert(strikeout, to: :plain) == "~~Example~~"
   end
 
   test "AST.Superscript" do
-    superscript = %Panpipe.AST.Superscript{text: %Panpipe.AST.Str{string: "Example"}}
+    superscript = %Panpipe.AST.Superscript{children: %Panpipe.AST.Str{string: "Example"}}
     assert Panpipe.Pandoc.Conversion.convert(superscript, to: :markdown) == "^Example^"
     assert Panpipe.Pandoc.Conversion.convert(superscript, to: :plain) == "^(Example)"
   end
 
   test "AST.Quoted" do
-    quoted = %Panpipe.AST.Quoted{text: %Panpipe.AST.Str{string: "Example"}, type: "SingleQuote"}
+    quoted = %Panpipe.AST.Quoted{children: %Panpipe.AST.Str{string: "Example"}, type: "SingleQuote"}
     assert Panpipe.Pandoc.Conversion.convert(quoted, to: :markdown) == "'Example'"
     assert Panpipe.Pandoc.Conversion.convert(quoted, to: :plain) == "‘Example’"
   end
 
   test "AST.Cite" do
-    cite = %Panpipe.AST.Cite{text: %Panpipe.AST.Str{string: "[@Example]"},
+    cite = %Panpipe.AST.Cite{children: %Panpipe.AST.Str{string: "[@Example]"},
       citations: [
         %Panpipe.AST.Cite.Citation{
           id: "Example",
@@ -211,14 +211,14 @@ defmodule Panpipe.Pandoc.ConversionTest do
 
   test "AST.Link" do
     link = %Panpipe.AST.Link{
-      text: %Panpipe.AST.Str{string: "Example"},
+      children: %Panpipe.AST.Str{string: "Example"},
       target: "http://example.com"
     }
     assert Panpipe.Pandoc.Conversion.convert(link, to: :markdown) == "[Example](http://example.com)"
     assert Panpipe.Pandoc.Conversion.convert(link, to: :plain) == "Example"
 
     link = %Panpipe.AST.Link{
-      text: %Panpipe.AST.Str{string: "http://example.com"},
+      children: %Panpipe.AST.Str{string: "http://example.com"},
       target: "http://example.com"
     }
     assert Panpipe.Pandoc.Conversion.convert(link, to: :markdown) == "<http://example.com>"
@@ -227,7 +227,7 @@ defmodule Panpipe.Pandoc.ConversionTest do
 
   test "AST.Image" do
     image = %Panpipe.AST.Image{
-      text: %Panpipe.AST.Str{string: "Example"},
+      children: %Panpipe.AST.Str{string: "Example"},
       target: "http://example.com"
     }
     assert Panpipe.Pandoc.Conversion.convert(image, to: :markdown) == "![Example](http://example.com)"
@@ -236,7 +236,7 @@ defmodule Panpipe.Pandoc.ConversionTest do
 
   test "AST.Note" do
     note = %Panpipe.AST.Note{
-      text: [
+      children: [
         %Panpipe.AST.Para{children: [%Panpipe.AST.Str{string: "Note"}]}
       ]
     }
@@ -246,7 +246,7 @@ defmodule Panpipe.Pandoc.ConversionTest do
   end
 
   test "AST.Span" do
-    span = %Panpipe.AST.Para{children: [%Panpipe.AST.Span{text: [%Panpipe.AST.Str{string: "Example"}]}]}
+    span = %Panpipe.AST.Para{children: [%Panpipe.AST.Span{children: [%Panpipe.AST.Str{string: "Example"}]}]}
     assert Panpipe.Pandoc.Conversion.convert(span, to: :markdown) == "Example"
     assert Panpipe.Pandoc.Conversion.convert(span, to: :plain) == "Example"
   end

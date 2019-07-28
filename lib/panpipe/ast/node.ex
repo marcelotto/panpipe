@@ -24,11 +24,8 @@ defmodule Panpipe.AST.Node do
 
       defstruct unquote(fields)
 
-      if unquote(node_type) == :block do
-        def children(%{children: children}), do: children
-      else
-        def children(_), do: "#{__MODULE__} must define an implementation of children/1"
-      end
+      def children(%{children: children}), do: children
+      def children(_), do: []
 
       defimpl Panpipe.Pandoc.Conversion do
         def convert(node, opts) do

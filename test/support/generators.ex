@@ -33,19 +33,19 @@ defmodule Panpipe.Generators do
 
   def ast_node(:emph) do
     gen_node AST.Emph, %{
-      text: :children
+      children: :children
     }
   end
 
   def ast_node(:strong) do
     gen_node AST.Strong, %{
-      text: :children
+      children: :children
     }
   end
 
   def ast_node(:link) do
     gen_node AST.Link, %{
-      text: :formated_text,
+      children: :formated_text,
       target: :url,
       title: :text,
 #      attr: TODO
