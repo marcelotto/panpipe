@@ -9,19 +9,22 @@ defmodule Panpipe.Document do
     }
   end
 
+  def fragment(%__MODULE__{} = document), do: document
 
-  def fragment(%{block: true} = node) do
-    %__MODULE__{children: [node]}
-  end
-
-  def fragment(nodes) do
-    fragment(%Panpipe.AST.Plain{children: List.wrap(nodes)})
+  def fragment(node) do
+    if Panpipe.AST.Node.block?(node) do
+      %__MODULE__{children: [node]}
+    else
+      fragment(%Panpipe.AST.Plain{children: List.wrap(node)})
+    end
   end
 end
 
 import ProtocolEx
 
 defimpl_ex Panpipe.Pandoc.Document, %{"blocks" => _, "pandoc-api-version" => _}, for: Panpipe.Pandoc.AST.Node do
+  @moduledoc false
+
   def to_panpipe(%{"blocks" => blocks, "meta" => meta}) do
     %Panpipe.Document{
       children: blocks |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),

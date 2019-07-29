@@ -4,6 +4,9 @@ defmodule Panpipe.AST.Node do
 
   @callback children(t) :: [t]
 
+  @callback block?() :: bool
+  @callback inline?() :: bool
+
   @callback to_pandoc(t) :: map
 
 
@@ -11,6 +14,9 @@ defmodule Panpipe.AST.Node do
 
 
   def to_pandoc(%mod{} = node), do: mod.to_pandoc(node)
+
+  def block?(%mod{}), do: mod.block?()
+  def inline?(%mod{}), do: mod.inline?()
 
 
   @doc false
@@ -26,6 +32,18 @@ defmodule Panpipe.AST.Node do
 
       def children(%{children: children}), do: children
       def children(_), do: []
+
+      if unquote(node_type) == :block do
+        def block?(), do: true
+      else
+        def block?(), do: false
+      end
+
+      if unquote(node_type) == :inline do
+        def inline?(), do: true
+      else
+        def inline?(), do: false
+      end
 
       defimpl Panpipe.Pandoc.Conversion do
         def convert(node, opts) do
@@ -71,8 +89,6 @@ defmodule Panpipe.AST.Node do
 
   defp fields(:block, fields) do
     [
-      block: true,
-      inline: false,
       children: []
     ]
     ++ @shared_fields
@@ -80,12 +96,7 @@ defmodule Panpipe.AST.Node do
   end
 
   defp fields(:inline, fields) do
-
-    [
-      block: false,
-      inline: true
-    ]
-    ++ @shared_fields
+    @shared_fields
     |> Keyword.merge(to_keywords(fields))
   end
 
