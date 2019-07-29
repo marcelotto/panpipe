@@ -116,7 +116,7 @@ defmodule Panpipe.Pandoc do
 
       {{:data, data}, opts} ->
         # TODO: This depends on Goon to be installed and configured properly, since the basic Porcelain driver won't work: <https://github.com/alco/porcelain/issues/37>
-        Porcelain.exec(@pandoc, build_opts(opts), in: data)
+        Porcelain.exec(@pandoc, build_opts(opts), in: data, err: :out)
 
       {nil, _} ->
         if non_conversion_command?(opts) do
