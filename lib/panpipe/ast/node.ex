@@ -10,7 +10,7 @@ defmodule Panpipe.AST.Node do
   @callback to_pandoc(t) :: map
 
 
-  @shared_fields parent: nil, state: nil
+  @shared_fields parent: nil
 
 
   def to_pandoc(%mod{} = node), do: mod.to_pandoc(node)
