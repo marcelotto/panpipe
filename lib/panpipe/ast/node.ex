@@ -11,11 +11,15 @@ defmodule Panpipe.AST.Node do
 
   @callback to_pandoc(t) :: map
 
+  @callback transform(t, fun) :: t
+
 
   @shared_fields parent: nil
 
 
   def to_pandoc(%mod{} = node), do: mod.to_pandoc(node)
+
+  def transform(%mod{} = node, fun), do: mod.transform(node, fun)
 
   def block?(%mod{}), do: mod.block?()
   def inline?(%mod{}), do: mod.inline?()
@@ -48,6 +52,8 @@ defmodule Panpipe.AST.Node do
       else
         def inline?(), do: false
       end
+
+      def transform(node, fun), do: do_transform(node, fun)
 
       defimpl Panpipe.Pandoc.Conversion do
         def convert(node, opts) do
@@ -87,8 +93,44 @@ defmodule Panpipe.AST.Node do
 
       end
 
-      defoverridable [children: 1]
+      defoverridable [children: 1, transform: 2]
     end
+  end
+
+  @doc !"""
+  This is a general implementation of the `Panpipe.AST.Node.transform/2` function.
+  Do not use it directly, but instead call the `Panpipe.AST.Node.transform/2` implementation
+  of a node, which might have a different implementation.
+  """
+  def do_transform(node, fun)
+
+  def do_transform(%{children: children} = node, fun) do
+    %{node | children: do_transform_children(children, node, fun)}
+  end
+
+  def do_transform(node, _), do: node
+
+  @doc false
+  def do_transform_children(children, node, fun) do
+    Enum.flat_map(children, fn child ->
+      case fun.(%{child | parent: node}) do
+        {:halt, mapped_children} ->
+          mapped_children
+          |> List.wrap()
+          |> Enum.map(fn mapped_child -> %{mapped_child | parent: nil} end)
+
+        nil ->
+          transform(child, fun)
+          |> List.wrap()
+
+        mapped_children ->
+          mapped_children
+          |> List.wrap()
+          |> Enum.map(fn mapped_child ->
+            transform(%{mapped_child | parent: nil}, fun)
+          end)
+      end
+    end)
   end
 
   defp fields(:block, fields) do

@@ -406,6 +406,18 @@ defmodule Panpipe.AST.Table do
     table.caption ++ List.flatten(table.header) ++ List.flatten(table.rows)
   end
 
+  def transform(%__MODULE_{} = table, fun) do
+    %{table |
+      caption: Panpipe.AST.Node.do_transform_children(table.caption, table, fun),
+      header: Enum.map(table.header, &(Panpipe.AST.Node.do_transform_children(&1, table, fun))),
+      rows: Enum.map(table.rows, fn row ->
+              Enum.map(row, fn columns ->
+                Panpipe.AST.Node.do_transform_children(columns, table, fun)
+              end)
+            end)
+    }
+  end
+
   def to_pandoc(%__MODULE__{} = table) do
     %{
       "t" => "Table",
