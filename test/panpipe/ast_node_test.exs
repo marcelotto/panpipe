@@ -41,8 +41,7 @@ defmodule Panpipe.AST.NodeTest do
   end
 
   test "Enum.filter/2" do
-    {:ok, pandoc_ast} = Panpipe.Pandoc.ast(input: @example_doc)
-    document = Panpipe.Pandoc.AST.Node.to_panpipe(pandoc_ast)
+    {:ok, document} = Panpipe.ast(input: @example_doc)
 
     assert document
            |> Enum.filter(fn node -> match?(%Panpipe.AST.Link{}, node) end)

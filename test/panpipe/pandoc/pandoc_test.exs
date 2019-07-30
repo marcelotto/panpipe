@@ -20,7 +20,17 @@ defmodule Panpipe.PandocTest do
     end
   end
 
-  test "ast/1" do
-    assert {:ok, %{"blocks" => _}} = Pandoc.ast(input: @example_doc)
+  describe "ast/2" do
+    test "with the input in the options" do
+      assert {:ok, %{"blocks" => _}} = Pandoc.ast(input: @example_doc)
+    end
+
+    test "with input string" do
+      assert {:ok, %{"blocks" => _}} = Pandoc.ast("# Test")
+    end
+
+    test "with input string and options" do
+      assert {:ok, %{"blocks" => [%{"c" => _}]}} = Pandoc.ast("# Test", base_header_level: 3)
+    end
   end
 end
