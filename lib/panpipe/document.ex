@@ -1,6 +1,8 @@
 defmodule Panpipe.Document do
   use Panpipe.AST.Node, type: :block, fields: [:meta]
 
+  def child_type(), do: :block
+
   def to_pandoc(%Panpipe.Document{children: children, meta: meta}) do
     %{
       "blocks" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1),

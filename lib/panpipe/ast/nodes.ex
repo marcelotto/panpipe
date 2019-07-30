@@ -13,6 +13,8 @@ end
 defmodule Panpipe.AST.Plain do
   use Panpipe.AST.Node, type: :block
 
+  def child_type(), do: :inline
+
   def to_pandoc(%__MODULE__{children: children}) do
     %{
       "t" => "Plain",
@@ -38,6 +40,8 @@ end
 defmodule Panpipe.AST.Para do
   use Panpipe.AST.Node, type: :block
 
+  def child_type(), do: :inline
+
   def to_pandoc(%__MODULE__{children: children}) do
     %{
       "t" => "Para",
@@ -62,6 +66,8 @@ end
 
 defmodule Panpipe.AST.LineBlock do
   use Panpipe.AST.Node, type: :block
+
+  def child_type(), do: :inline
 
   # TODO: test in traversal tests, if we need to flatten the children
 
@@ -94,6 +100,8 @@ end
 defmodule Panpipe.AST.CodeBlock do
   use Panpipe.AST.Node, type: :block, fields: [:string, attr: ["", [], []]]
 
+  def child_type(), do: nil
+
   def to_pandoc(%__MODULE__{string: string, attr: attr}) do
     %{
       "t" => "CodeBlock",
@@ -123,6 +131,8 @@ end
 defmodule Panpipe.AST.RawBlock do
   use Panpipe.AST.Node, type: :block, fields: [:format, :string]
 
+  def child_type(), do: nil
+
   def to_pandoc(%__MODULE__{format: format, string: string}) do
     %{"t" => "RawBlock", "c" => [format, string]}
   end
@@ -145,6 +155,8 @@ end
 
 defmodule Panpipe.AST.BlockQuote do
   use Panpipe.AST.Node, type: :block
+
+  def child_type(), do: :block
 
   def to_pandoc(%__MODULE__{children: children}) do
     %{
@@ -170,6 +182,8 @@ end
 
 defmodule Panpipe.AST.ListElement do
   use Panpipe.AST.Node, type: :block
+
+  def child_type(), do: :block
 
   def from_pandoc(bullet_point) do
     %__MODULE__{
@@ -227,6 +241,8 @@ end
 defmodule Panpipe.AST.OrderedList do
   use Panpipe.AST.Node, type: :block, fields: [:list_attributes]
 
+  def child_type(), do: :block # or ListElement?
+
   def to_pandoc(%__MODULE__{list_attributes: list_attributes, children: children}) do
     %{
       "t" => "OrderedList",
@@ -256,6 +272,8 @@ end
 defmodule Panpipe.AST.BulletList do
   use Panpipe.AST.Node, type: :block
 
+  def child_type(), do: :block # or ListElement?
+
   def to_pandoc(%__MODULE__{children: children}) do
     %{
       "t" => "BulletList",
@@ -280,6 +298,8 @@ end
 
 defmodule Panpipe.AST.DefinitionList do
   use Panpipe.AST.Node, type: :block
+
+  def child_type(), do: :block # or :definition_tuple
 
   # TODO: test in traversal tests, if we need to flatten the children
 
@@ -322,6 +342,8 @@ end
 defmodule Panpipe.AST.Header do
   use Panpipe.AST.Node, type: :block, fields: [:level, attr: ["", [], []]]
 
+  def child_type(), do: :inline
+
   def to_pandoc(%__MODULE__{level: level, children: children, attr: attr}) do
     %{
       "t" => "Header",
@@ -349,6 +371,8 @@ end
 defmodule Panpipe.AST.HorizontalRule do
   use Panpipe.AST.Node, type: :block
 
+  def child_type(), do: nil
+
   def to_pandoc(%__MODULE__{}), do: %{"t" => "HorizontalRule"}
 end
 
@@ -374,9 +398,11 @@ defmodule Panpipe.AST.Table do
     "AlignDefault",
   ]
 
+  def child_type(), do: :inline # or cells?
+
   def children(%__MODULE__{} = table) do
     # TODO: test in traversal tests, if we need to flatten the children
-    # TODO: During traversal it would be good if some context information would be available, like this links was part of the table caption or a table cell etc.
+    # TODO #167558619: During traversal, it would be good if some context information would be available, like if a link was part of the table caption or a table cell etc.
     table.caption ++ List.flatten(table.header) ++ List.flatten(table.rows)
   end
 
@@ -431,6 +457,8 @@ end
 defmodule Panpipe.AST.Div do
   use Panpipe.AST.Node, type: :block, fields: [attr: ["", [], []]]
 
+  def child_type(), do: :block
+
   def to_pandoc(%__MODULE__{children: children, attr: attr}) do
     %{
       "t" => "Div",
@@ -460,6 +488,8 @@ end
 defmodule Panpipe.AST.Str do
   use Panpipe.AST.Node, type: :inline, fields: [:string]
 
+  def child_type(), do: nil
+
   def to_pandoc(%__MODULE__{string: str}), do: %{"t" => "Str", "c" => str}
 end
 
@@ -475,6 +505,8 @@ end
 
 defmodule Panpipe.AST.Emph do
   use Panpipe.AST.Node, type: :inline, fields: [:children]
+
+  def child_type(), do: :inline
 
   def to_pandoc(%__MODULE__{children: children}) do
     %{"t" => "Emph", "c" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)}
@@ -496,6 +528,8 @@ end
 defmodule Panpipe.AST.Strong do
   use Panpipe.AST.Node, type: :inline, fields: [:children]
 
+  def child_type(), do: :inline
+
   def to_pandoc(%__MODULE__{children: children}) do
     %{"t" => "Strong", "c" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)}
   end
@@ -515,6 +549,8 @@ end
 
 defmodule Panpipe.AST.Strikeout do
   use Panpipe.AST.Node, type: :inline, fields: [:children]
+
+  def child_type(), do: :inline
 
   def to_pandoc(%__MODULE__{children: children}) do
     %{"t" => "Strikeout", "c" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)}
@@ -536,6 +572,8 @@ end
 defmodule Panpipe.AST.Superscript do
   use Panpipe.AST.Node, type: :inline, fields: [:children]
 
+  def child_type(), do: :inline
+
   def to_pandoc(%__MODULE__{children: children}) do
     %{"t" => "Superscript", "c" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)}
   end
@@ -556,6 +594,8 @@ end
 defmodule Panpipe.AST.Subscript do
   use Panpipe.AST.Node, type: :inline, fields: [:children]
 
+  def child_type(), do: :inline
+
   def to_pandoc(%__MODULE__{children: children}) do
     %{"t" => "Subscript", "c" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)}
   end
@@ -575,6 +615,8 @@ end
 
 defmodule Panpipe.AST.SmallCaps do
   use Panpipe.AST.Node, type: :inline, fields: [:children]
+
+  def child_type(), do: :inline
 
   def to_pandoc(%__MODULE__{children: children}) do
     %{"t" => "SmallCaps", "c" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)}
@@ -601,6 +643,8 @@ defmodule Panpipe.AST.Quoted do
     "SingleQuote",
     "DoubleQuote",
   ]
+
+  def child_type(), do: :inline
 
   def to_pandoc(%__MODULE__{children: children, type: quote_type}) do
     %{
@@ -630,6 +674,8 @@ end
 
 defmodule Panpipe.AST.Cite do
   use Panpipe.AST.Node, type: :inline, fields: [:citations, :children]
+
+  def child_type(), do: :inline
 
   def to_pandoc(%__MODULE__{children: children, citations: citations}) do
     %{
@@ -706,6 +752,8 @@ end
 defmodule Panpipe.AST.Code do
   use Panpipe.AST.Node, type: :inline, fields: [:string, attr: ["", [], []]]
 
+  def child_type(), do: nil
+
   def to_pandoc(%__MODULE__{string: string, attr: attr}) do
     %{
       "t" => "Code",
@@ -735,6 +783,8 @@ end
 defmodule Panpipe.AST.Space do
   use Panpipe.AST.Node, type: :inline
 
+  def child_type(), do: nil
+
   def to_pandoc(%__MODULE__{}), do: %{"t" => "Space"}
 end
 
@@ -751,6 +801,8 @@ end
 defmodule Panpipe.AST.SoftBreak do
   use Panpipe.AST.Node, type: :inline
 
+  def child_type(), do: nil
+
   def to_pandoc(%__MODULE__{}), do: %{"t" => "SoftBreak"}
 end
 
@@ -766,6 +818,8 @@ end
 
 defmodule Panpipe.AST.LineBreak do
   use Panpipe.AST.Node, type: :inline
+
+  def child_type(), do: nil
 
   def to_pandoc(%__MODULE__{}), do: %{"t" => "LineBreak"}
 end
@@ -790,6 +844,8 @@ defmodule Panpipe.AST.Math do
     "DisplayMath",
   ]
 
+  def child_type(), do: nil
+
   def to_pandoc(%__MODULE__{type: math_type, string: string}) do
     %{"t" => "Math", "c" => [%{"t" => math_type}, string]}
   end
@@ -813,6 +869,8 @@ end
 defmodule Panpipe.AST.RawInline do
   use Panpipe.AST.Node, type: :inline, fields: [:format, :string]
 
+  def child_type(), do: nil
+
   def to_pandoc(%__MODULE__{format: format, string: string}) do
     %{"t" => "RawInline", "c" => [format, string]}
   end
@@ -835,6 +893,8 @@ end
 
 defmodule Panpipe.AST.Link do
   use Panpipe.AST.Node, type: :inline, fields: [:children, :target, title: "", attr: ["", [], []]]
+
+  def child_type(), do: :inline
 
   def to_pandoc(%__MODULE__{children: children, target: target, title: title, attr: attr}) do
     %{
@@ -868,6 +928,8 @@ end
 defmodule Panpipe.AST.Image do
   use Panpipe.AST.Node, type: :inline, fields: [:children, :target, title: "", attr: ["", [], []]]
 
+  def child_type(), do: :inline
+
   def to_pandoc(%__MODULE__{children: children, target: target, title: title, attr: attr}) do
     %{
       "t" => "Image",
@@ -900,6 +962,8 @@ end
 defmodule Panpipe.AST.Note do
   use Panpipe.AST.Node, type: :inline, fields: [:children]
 
+  def child_type(), do: :block
+
   def to_pandoc(%__MODULE__{children: children}) do
     %{"t" => "Note", "c" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)}
   end
@@ -919,6 +983,8 @@ end
 
 defmodule Panpipe.AST.Span do
   use Panpipe.AST.Node, type: :inline, fields: [:children, attr: ["", [], []]]
+
+  def child_type(), do: :inline
 
   def to_pandoc(%__MODULE__{children: children, attr: attr}) do
     %{

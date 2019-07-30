@@ -7,6 +7,8 @@ defmodule Panpipe.AST.Node do
   @callback block?() :: bool
   @callback inline?() :: bool
 
+  @callback child_type() :: atom
+
   @callback to_pandoc(t) :: map
 
 
@@ -17,6 +19,8 @@ defmodule Panpipe.AST.Node do
 
   def block?(%mod{}), do: mod.block?()
   def inline?(%mod{}), do: mod.inline?()
+
+  def child_type(%mod{}), do: mod.child_type()
 
 
   @doc false
