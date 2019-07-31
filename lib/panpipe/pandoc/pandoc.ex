@@ -25,7 +25,6 @@ defmodule Panpipe.Pandoc do
     end
   end
 
-
   @info_path "priv/pandoc/info"
   @input_formats_file       Path.join(@info_path, "input-formats.txt")
   @output_formats_file      Path.join(@info_path, "output-formats.txt")
@@ -61,6 +60,8 @@ defmodule Panpipe.Pandoc do
   def highlight_languages(), do: @highlight_languages
   def highlight_styles(),    do: @highlight_styles
   def extensions(),          do: @extensions
+
+  @panpipe_options ~w[remove_trailing_newline]a
 
 
   @doc """
@@ -142,8 +143,11 @@ defmodule Panpipe.Pandoc do
     opts
     |> set_format_extensions(:to)
     |> set_format_extensions(:from)
+    |> Enum.reject(&panpipe_option?/1)
     |> Enum.map(&build_opt/1)
   end
+
+  defp panpipe_option?({opt, _}), do: opt in @panpipe_options
 
   defp build_opt({opt, true}),  do: "#{build_opt(opt)}"
   defp build_opt({opt, value}), do: "#{build_opt(opt)}=#{to_string(value)}"

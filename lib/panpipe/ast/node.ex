@@ -65,7 +65,7 @@ defmodule Panpipe.AST.Node do
                  |> Panpipe.Pandoc.call(Keyword.put(opts, :from, :json))
           do
             if result do
-              Panpipe.Pandoc.Conversion.Utils.post_process(result)
+              Panpipe.Pandoc.Conversion.Utils.post_process(result, node, opts)
             end
           else
             _ -> nil

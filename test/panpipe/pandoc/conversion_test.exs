@@ -3,21 +3,22 @@ defmodule Panpipe.Pandoc.ConversionTest do
 
   test "AST.Plain" do
     plain = %Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "Example"}]}
-    assert Panpipe.Pandoc.Conversion.convert(plain, to: :markdown) == "Example"
-    assert Panpipe.Pandoc.Conversion.convert(plain, to: :plain) == "Example"
+    assert Panpipe.Pandoc.Conversion.convert(plain, to: :markdown) == "Example\n"
+    assert Panpipe.Pandoc.Conversion.convert(plain, to: :plain) == "Example\n"
+    assert Panpipe.Pandoc.Conversion.convert(plain, to: :plain, remove_trailing_newline: true) == "Example"
   end
 
   test "AST.Header" do
     header = %Panpipe.AST.Header{level: 1, children: [%Panpipe.AST.Str{string: "Example"}]}
-    assert Panpipe.Pandoc.Conversion.convert(header, to: :markdown) == "Example\n======="
-    assert Panpipe.Pandoc.Conversion.convert(header, to: :markdown, atx: true) == "# Example"
-    assert Panpipe.Pandoc.Conversion.convert(header, to: :plain) == "\n\nEXAMPLE"
+    assert Panpipe.Pandoc.Conversion.convert(header, to: :markdown) == "Example\n=======\n"
+    assert Panpipe.Pandoc.Conversion.convert(header, to: :markdown, atx: true) == "# Example\n"
+    assert Panpipe.Pandoc.Conversion.convert(header, to: :plain) == "\n\nEXAMPLE\n"
   end
 
   test "AST.Para" do
     para = %Panpipe.AST.Para{children: [%Panpipe.AST.Str{string: "Example"}]}
-    assert Panpipe.Pandoc.Conversion.convert(para, to: :markdown) == "Example"
-    assert Panpipe.Pandoc.Conversion.convert(para, to: :plain) == "Example"
+    assert Panpipe.Pandoc.Conversion.convert(para, to: :markdown) == "Example\n"
+    assert Panpipe.Pandoc.Conversion.convert(para, to: :plain) == "Example\n"
   end
 
   test "AST.CodeBlock" do
@@ -25,8 +26,8 @@ defmodule Panpipe.Pandoc.ConversionTest do
       %Panpipe.AST.CodeBlock{
         string: "Example",
       }
-    assert Panpipe.Pandoc.Conversion.convert(code_block, to: :markdown) == "    Example"
-    assert Panpipe.Pandoc.Conversion.convert(code_block, to: :plain) == "    Example"
+    assert Panpipe.Pandoc.Conversion.convert(code_block, to: :markdown) == "    Example\n"
+    assert Panpipe.Pandoc.Conversion.convert(code_block, to: :plain) == "    Example\n"
 
     code_block =
       %Panpipe.AST.CodeBlock{
@@ -35,8 +36,12 @@ defmodule Panpipe.Pandoc.ConversionTest do
         attr: %Panpipe.AST.Attr{classes: ["sh"]}
       }
     assert Panpipe.Pandoc.Conversion.convert(code_block, to: {:markdown, %{disable: [:fenced_code_attributes]}}) ==
-             "``` sh\nExample\n```"
-    assert Panpipe.Pandoc.Conversion.convert(code_block, to: :plain) == "    Example"
+             """
+             ``` sh
+             Example
+             ```
+             """
+    assert Panpipe.Pandoc.Conversion.convert(code_block, to: :plain) == "    Example\n"
   end
 
   test "AST.BlockQuote" do
@@ -46,8 +51,8 @@ defmodule Panpipe.Pandoc.ConversionTest do
           %Panpipe.AST.Para{children: [%Panpipe.AST.Str{string: "Example"}]}
         ]
       }
-    assert Panpipe.Pandoc.Conversion.convert(block_quote, to: :markdown) == "> Example"
-    assert Panpipe.Pandoc.Conversion.convert(block_quote, to: :plain) == "  Example"
+    assert Panpipe.Pandoc.Conversion.convert(block_quote, to: :markdown) == "> Example\n"
+    assert Panpipe.Pandoc.Conversion.convert(block_quote, to: :plain) == "  Example\n"
   end
 
   test "AST.OrderedList" do
@@ -59,8 +64,8 @@ defmodule Panpipe.Pandoc.ConversionTest do
           %Panpipe.AST.ListElement{children: [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "Example2"}]}]},
         ]
       }
-    assert Panpipe.Pandoc.Conversion.convert(ordered_list, to: :markdown) == "1.  Example1\n2.  Example2"
-    assert Panpipe.Pandoc.Conversion.convert(ordered_list, to: :plain) == "1.  Example1\n2.  Example2"
+    assert Panpipe.Pandoc.Conversion.convert(ordered_list, to: :markdown) == "1.  Example1\n2.  Example2\n"
+    assert Panpipe.Pandoc.Conversion.convert(ordered_list, to: :plain) == "1.  Example1\n2.  Example2\n"
   end
 
   test "AST.BulletList" do
@@ -72,11 +77,11 @@ defmodule Panpipe.Pandoc.ConversionTest do
         ]
       }
     # Pandoc adds three spaces after the bullets; see https://github.com/jgm/pandoc/issues/3981
-    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :markdown) == "-   Example1\n-   Example2"
-    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :plain) == "-   Example1\n-   Example2"
+    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :markdown) == "-   Example1\n-   Example2\n"
+    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :plain) == "-   Example1\n-   Example2\n"
 
-    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :markdown, tab_stop: 2) == "- Example1\n- Example2"
-    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :plain, tab_stop: 2) == "- Example1\n- Example2"
+    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :markdown, tab_stop: 2) == "- Example1\n- Example2\n"
+    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :plain, tab_stop: 2) == "- Example1\n- Example2\n"
   end
 
   test "AST.DefinitionList" do
@@ -91,8 +96,8 @@ defmodule Panpipe.Pandoc.ConversionTest do
           ]
         ]
       }
-    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :markdown) == "Term\n\n:   Definition"
-    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :plain) == "Term\n\n    Definition"
+    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :markdown) == "Term\n\n:   Definition\n"
+    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :plain) == "Term\n\n    Definition\n"
   end
 
   test "AST.Table" do
@@ -125,7 +130,6 @@ defmodule Panpipe.Pandoc.ConversionTest do
 
               : Example table 1
             """
-            |> String.trim_trailing()
     assert Panpipe.Pandoc.Conversion.convert(table, to: :plain) == """
               Column1   Column2
               --------- ---------
@@ -134,7 +138,6 @@ defmodule Panpipe.Pandoc.ConversionTest do
 
               : Example table 1
             """
-            |> String.trim_trailing()
   end
 
   test "AST.Str" do
@@ -245,7 +248,7 @@ defmodule Panpipe.Pandoc.ConversionTest do
   end
 
   test "AST.Span" do
-    span = %Panpipe.AST.Para{children: [%Panpipe.AST.Span{children: [%Panpipe.AST.Str{string: "Example"}]}]}
+    span = %Panpipe.AST.Span{children: [%Panpipe.AST.Str{string: "Example"}]}
     assert Panpipe.Pandoc.Conversion.convert(span, to: :markdown) == "Example"
     assert Panpipe.Pandoc.Conversion.convert(span, to: :plain) == "Example"
   end
