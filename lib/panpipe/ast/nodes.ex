@@ -6,6 +6,55 @@ defprotocol_ex Panpipe.Pandoc.AST.Node do
   def to_panpipe(node)
 end
 
+################################################################################
+# Helper struct: Attr
+
+defmodule Panpipe.AST.Attr do
+  defstruct [
+    identifier: "",       # :: String
+    classes: [],          # :: [String]
+    key_value_pairs: %{}  # :: [(String, String)]
+  ]
+
+  def new(), do: %__MODULE__{}
+
+  def set_identifier(%__MODULE__{} = attr, identifier) do
+    %__MODULE__{attr | identifier: identifier}
+  end
+
+  def add_class(%__MODULE__{} = attr, class) do
+    %__MODULE__{attr | classes: List.wrap(attr.classes) ++ List.wrap(class)}
+  end
+
+  def add_key_value_pairs(%__MODULE__{} = attr, key_value_pairs) when is_map(key_value_pairs)do
+    %__MODULE__{attr | key_value_pairs: Map.merge(attr.key_value_pairs,
+      Map.new(key_value_pairs, fn {key, value} -> {to_string(key), to_string(value)} end))
+    }
+  end
+
+  def add_key_value_pairs(%__MODULE__{} = attr, key_value_pairs) when is_list(key_value_pairs)do
+    add_key_value_pairs(attr, Map.new(key_value_pairs))
+  end
+
+  def from_pandoc([identifier, classes, key_value_pairs]) do
+    %__MODULE__{
+      identifier: identifier,
+      classes: classes,
+      key_value_pairs: Map.new(key_value_pairs, fn [key, value] -> {key, value} end)
+    }
+  end
+
+  def to_pandoc(%__MODULE__{} = attr) do
+    [
+      attr.identifier,
+      attr.classes,
+      (attr.key_value_pairs || %{})
+      |> Enum.map(fn {key, value} -> [key, value] end),
+    ]
+  end
+
+  def to_pandoc(nil), do: ["", [], []]
+end
 
 ################################################################################
 # Plain [Inline] - Plain text, not a paragraph
@@ -98,19 +147,19 @@ end
 # CodeBlock Attr String - Code block (literal) with attributes
 
 defmodule Panpipe.AST.CodeBlock do
-  use Panpipe.AST.Node, type: :block, fields: [:string, attr: ["", [], []]]
+  use Panpipe.AST.Node, type: :block, fields: [:string, attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: nil
 
   def to_pandoc(%__MODULE__{string: string, attr: attr}) do
     %{
       "t" => "CodeBlock",
-      "c" => [attr, string]
+      "c" => [Panpipe.AST.Attr.to_pandoc(attr), string]
     }
   end
 
-  def language(%__MODULE__{attr: ["", [language], []]}), do: language
-  def language(%__MODULE__{}), do: ""
+  def language(%__MODULE__{attr: attr}),
+    do: attr.classes |> List.wrap() |> List.first()
 end
 
 defimpl_ex Panpipe.Pandoc.CodeBlock, %{"t" => "CodeBlock"}, for: Panpipe.Pandoc.AST.Node do
@@ -119,7 +168,7 @@ defimpl_ex Panpipe.Pandoc.CodeBlock, %{"t" => "CodeBlock"}, for: Panpipe.Pandoc.
   def to_panpipe(%{"c" => [attr, string]}) do
     %Panpipe.AST.CodeBlock{
       string: string,
-      attr: attr
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
     }
   end
 end
@@ -340,14 +389,14 @@ end
 # Header Int Attr [Inline] - Header - level (integer) and text (inlines)
 
 defmodule Panpipe.AST.Header do
-  use Panpipe.AST.Node, type: :block, fields: [:level, attr: ["", [], []]]
+  use Panpipe.AST.Node, type: :block, fields: [:level, attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :inline
 
   def to_pandoc(%__MODULE__{level: level, children: children, attr: attr}) do
     %{
       "t" => "Header",
-      "c" => [level, attr, Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)]
+      "c" => [level, Panpipe.AST.Attr.to_pandoc(attr), Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)]
     }
   end
 end
@@ -359,7 +408,7 @@ defimpl_ex Panpipe.Pandoc.Header, %{"t" => "Header"}, for: Panpipe.Pandoc.AST.No
     %Panpipe.AST.Header{
       level: level,
       children: children |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
-      attr: attr
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
     }
   end
 end
@@ -467,7 +516,7 @@ end
 # Div Attr [Block] - Generic block container with attributes
 
 defmodule Panpipe.AST.Div do
-  use Panpipe.AST.Node, type: :block, fields: [attr: ["", [], []]]
+  use Panpipe.AST.Node, type: :block, fields: [attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :block
 
@@ -475,7 +524,7 @@ defmodule Panpipe.AST.Div do
     %{
       "t" => "Div",
       "c" => [
-        attr,
+        Panpipe.AST.Attr.to_pandoc(attr),
         Enum.map(children, &Panpipe.AST.Node.to_pandoc/1),
       ]
     }
@@ -488,7 +537,7 @@ defimpl_ex Panpipe.Pandoc.Div, %{"t" => "Div"}, for: Panpipe.Pandoc.AST.Node do
   def to_panpipe(%{"c" => [attr, text]}) do
     %Panpipe.AST.Div{
       children: text |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
-      attr: attr
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
     }
   end
 end
@@ -762,19 +811,19 @@ end
 # Code Attr String - Inline code (literal)
 
 defmodule Panpipe.AST.Code do
-  use Panpipe.AST.Node, type: :inline, fields: [:string, attr: ["", [], []]]
+  use Panpipe.AST.Node, type: :inline, fields: [:string, attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: nil
 
   def to_pandoc(%__MODULE__{string: string, attr: attr}) do
     %{
       "t" => "Code",
-      "c" => [attr, string]
+      "c" => [Panpipe.AST.Attr.to_pandoc(attr), string]
     }
   end
 
-  def language(%__MODULE__{attr: ["", [language], []]}), do: language
-  def language(%__MODULE__{}), do: ""
+  def language(%__MODULE__{attr: attr}),
+    do: attr.classes |> List.wrap() |> List.first()
 end
 
 defimpl_ex Panpipe.Pandoc.Code, %{"t" => "Code"}, for: Panpipe.Pandoc.AST.Node do
@@ -783,7 +832,7 @@ defimpl_ex Panpipe.Pandoc.Code, %{"t" => "Code"}, for: Panpipe.Pandoc.AST.Node d
   def to_panpipe(%{"c" => [attr, string]}) do
     %Panpipe.AST.Code{
       string: string,
-      attr: attr
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
     }
   end
 end
@@ -904,7 +953,7 @@ end
 # Link Attr [Inline] Target - Hyperlink: alt text (list of inlines), target
 
 defmodule Panpipe.AST.Link do
-  use Panpipe.AST.Node, type: :inline, fields: [:children, :target, title: "", attr: ["", [], []]]
+  use Panpipe.AST.Node, type: :inline, fields: [:children, :target, title: "", attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :inline
 
@@ -912,7 +961,7 @@ defmodule Panpipe.AST.Link do
     %{
       "t" => "Link",
       "c" => [
-        attr,
+        Panpipe.AST.Attr.to_pandoc(attr),
         Enum.map(children, &Panpipe.AST.Node.to_pandoc/1),
         [target, title]
       ]
@@ -928,7 +977,7 @@ defimpl_ex Panpipe.Pandoc.Link, %{"t" => "Link"}, for: Panpipe.Pandoc.AST.Node d
       children: children |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
       target: target,
       title: title,
-      attr: attr
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
     }
   end
 end
@@ -938,7 +987,7 @@ end
 # Image Attr [Inline] Target - Image: alt text (list of inlines), target
 
 defmodule Panpipe.AST.Image do
-  use Panpipe.AST.Node, type: :inline, fields: [:children, :target, title: "", attr: ["", [], []]]
+  use Panpipe.AST.Node, type: :inline, fields: [:children, :target, title: "", attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :inline
 
@@ -946,7 +995,7 @@ defmodule Panpipe.AST.Image do
     %{
       "t" => "Image",
       "c" => [
-        attr,
+        Panpipe.AST.Attr.to_pandoc(attr),
         Enum.map(children, &Panpipe.AST.Node.to_pandoc/1),
         [target, title]
       ]
@@ -962,7 +1011,7 @@ defimpl_ex Panpipe.Pandoc.Image, %{"t" => "Image"}, for: Panpipe.Pandoc.AST.Node
       children: children |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
       target: target,
       title: title,
-      attr: attr
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
     }
   end
 end
@@ -994,7 +1043,7 @@ end
 # Span Attr [Inline] - Generic inline container with attributes
 
 defmodule Panpipe.AST.Span do
-  use Panpipe.AST.Node, type: :inline, fields: [:children, attr: ["", [], []]]
+  use Panpipe.AST.Node, type: :inline, fields: [:children, attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :inline
 
@@ -1002,7 +1051,7 @@ defmodule Panpipe.AST.Span do
     %{
       "t" => "Span",
       "c" => [
-        attr,
+        Panpipe.AST.Attr.to_pandoc(attr),
         Enum.map(children, &Panpipe.AST.Node.to_pandoc/1),
       ]
     }
@@ -1015,7 +1064,7 @@ defimpl_ex Panpipe.Pandoc.Span, %{"t" => "Span"}, for: Panpipe.Pandoc.AST.Node d
   def to_panpipe(%{"c" => [attr, children]}) do
     %Panpipe.AST.Span{
       children: children |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
-      attr: attr
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
     }
   end
 end

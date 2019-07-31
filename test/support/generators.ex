@@ -21,7 +21,7 @@ defmodule Panpipe.Generators do
     gen_node AST.Header, %{
       level: StreamData.integer(1..6),
       children: :children,
-#      attr: TODO
+      attr: :attr
     }
   end
 
@@ -48,7 +48,7 @@ defmodule Panpipe.Generators do
       children: :formated_text,
       target: :url,
       title: :text,
-#      attr: TODO
+      attr: :attr
     }
   end
 
@@ -87,4 +87,7 @@ defmodule Panpipe.Generators do
     StreamData.binary() # TODO: generate URL strings
   end
 
+  defp gen(:attr, _opts) do
+    StreamData.constant(Panpipe.AST.Attr.new())
+  end
 end

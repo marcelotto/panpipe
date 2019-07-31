@@ -24,8 +24,6 @@ defmodule Panpipe.Pandoc.ConversionTest do
     code_block =
       %Panpipe.AST.CodeBlock{
         string: "Example",
-        children: [],
-        attr: ["", [], []]
       }
     assert Panpipe.Pandoc.Conversion.convert(code_block, to: :markdown) == "    Example"
     assert Panpipe.Pandoc.Conversion.convert(code_block, to: :plain) == "    Example"
@@ -34,9 +32,10 @@ defmodule Panpipe.Pandoc.ConversionTest do
       %Panpipe.AST.CodeBlock{
         string: "Example",
         children: [],
-        attr: ["", ["sh"], []]
+        attr: %Panpipe.AST.Attr{classes: ["sh"]}
       }
-    assert Panpipe.Pandoc.Conversion.convert(code_block, to: {:markdown, %{disable: [:fenced_code_attributes]}}) == "``` sh\nExample\n```"
+    assert Panpipe.Pandoc.Conversion.convert(code_block, to: {:markdown, %{disable: [:fenced_code_attributes]}}) ==
+             "``` sh\nExample\n```"
     assert Panpipe.Pandoc.Conversion.convert(code_block, to: :plain) == "    Example"
   end
 
