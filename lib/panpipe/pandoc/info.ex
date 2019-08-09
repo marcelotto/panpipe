@@ -1,4 +1,6 @@
 defmodule Panpipe.Pandoc.Info do
+  @moduledoc false
+
   def read(file) do
     file
     |> File.read!()
