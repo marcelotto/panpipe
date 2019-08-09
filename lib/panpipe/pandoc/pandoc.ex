@@ -102,6 +102,14 @@ defmodule Panpipe.Pandoc do
     end
   end
 
+  def call!(input_or_opts, opts \\ nil) do
+    with {:ok, result} <- call(input_or_opts, opts) do
+      result
+    else
+      {:error, error} -> raise error
+    end
+  end
+
   defp normalize_opts(input, opts) when is_binary(input) do
     opts
     |> List.wrap()
@@ -190,6 +198,13 @@ defmodule Panpipe.Pandoc do
     opts = normalize_opts(input_or_opts, opts)
     with {:ok, json} <- opts |> Keyword.put(:to, "json") |> call() do
       Jason.decode(json)
+    end
+  end
+  def ast!(input_or_opts, opts \\ nil) do
+    with {:ok, result} <- ast(input_or_opts, opts) do
+      result
+    else
+      {:error, error} -> raise error
     end
   end
 end
