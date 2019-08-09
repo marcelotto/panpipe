@@ -8,6 +8,6 @@
   "makeup_elixir": {:hex, :makeup_elixir, "0.14.0", "cf8b7c66ad1cff4c14679698d532f0b5d45a3968ffbcbfd590339cb57742f1ae", [:mix], [{:makeup, "~> 1.0", [hex: :makeup, repo: "hexpm", optional: false]}], "hexpm"},
   "nimble_parsec": {:hex, :nimble_parsec, "0.5.0", "90e2eca3d0266e5c53f8fbe0079694740b9c91b6747f2b7e3c5d21966bba8300", [:mix], [], "hexpm"},
   "porcelain": {:hex, :porcelain, "2.0.3", "2d77b17d1f21fed875b8c5ecba72a01533db2013bd2e5e62c6d286c029150fdc", [:mix], [], "hexpm"},
-  "protocol_ex": {:hex, :protocol_ex, "0.4.2", "faa832d88e60621f74d90aecc6928e0dc97af7ec05598a289cfd75aaeb43a130", [:mix], [], "hexpm"},
+  "protocol_ex": {:hex, :protocol_ex, "0.4.3", "4acbe35da85109dc40315c1139bb7a65ebc7fc102d384cd8b3038384fbb9b282", [:mix], [], "hexpm"},
   "stream_data": {:hex, :stream_data, "0.4.3", "62aafd870caff0849a5057a7ec270fad0eb86889f4d433b937d996de99e3db25", [:mix], [], "hexpm"},
 }
