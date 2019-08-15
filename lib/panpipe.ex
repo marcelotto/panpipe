@@ -1,6 +1,11 @@
 defmodule Panpipe do
   alias Panpipe.Pandoc
 
+  defdelegate pandoc(input_or_opts, opts \\ nil),  to: Pandoc, as: :call
+  defdelegate pandoc!(input_or_opts, opts \\ nil), to: Pandoc, as: :call!
+
+  defdelegate transform(node, fun), to: Panpipe.AST.Node
+
   def ast(input_or_opts, opts \\ nil) do
     with {:ok, pandoc_ast} <- Pandoc.ast(input_or_opts, opts) do
       {:ok, Panpipe.Pandoc.AST.Node.to_panpipe(pandoc_ast)}
