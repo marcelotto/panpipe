@@ -15,6 +15,31 @@ defmodule Panpipe do
     end
   end
 
+  def ast_fragment(input_or_opts, opts \\ nil) do
+    with {:ok, pandoc_ast} <- ast(input_or_opts, opts) do
+      case pandoc_ast do
+        %Panpipe.Document{children: [%Panpipe.AST.Para{children: [fragment]}]} ->
+          {:ok, fragment}
+
+        %Panpipe.Document{children: [fragment]} ->
+          {:ok, fragment}
+
+        %Panpipe.Document{children: children} when is_list(children) ->
+          {:ok, %Panpipe.AST.Plain{children: children}}
+
+        _ -> {:error, "unable to extract ast_fragment from #{inspect pandoc_ast}"}
+      end
+    end
+  end
+
+  def ast_fragment!(input_or_opts, opts \\ nil) do
+    with {:ok, result} <- ast_fragment(input_or_opts, opts) do
+      result
+    else
+      {:error, error} -> raise error
+    end
+  end
+
 
   Enum.each Panpipe.Pandoc.output_formats, fn output_format ->
     def unquote(String.to_atom("to_" <> to_string(output_format)))(input, opts \\ []) do
