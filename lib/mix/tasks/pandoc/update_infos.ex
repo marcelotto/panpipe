@@ -1,4 +1,6 @@
 defmodule Mix.Tasks.Pandoc.UpdateInfos do
+  @moduledoc false
+
   use Mix.Task
 
   alias Panpipe.Pandoc
