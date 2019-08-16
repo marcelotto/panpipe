@@ -1068,3 +1068,21 @@ defimpl_ex Panpipe.Pandoc.Span, %{"t" => "Span"}, for: Panpipe.Pandoc.AST.Node d
     }
   end
 end
+
+
+################################################################################
+# Null - Nothing
+
+defmodule Panpipe.AST.Null do
+  use Panpipe.AST.Node, type: :block
+
+  def child_type(), do: :nil
+
+  def to_pandoc(%__MODULE__{}), do: %{"t" => "Null"}
+end
+
+defimpl_ex Panpipe.Pandoc.Null, %{"t" => "Null"}, for: Panpipe.Pandoc.AST.Node do
+  @moduledoc false
+
+  def to_panpipe(_), do: %Panpipe.AST.Null{}
+end

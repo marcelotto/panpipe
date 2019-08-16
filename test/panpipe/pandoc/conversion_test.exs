@@ -252,4 +252,10 @@ defmodule Panpipe.Pandoc.ConversionTest do
     assert Panpipe.Pandoc.Conversion.convert(span, to: :markdown) == "Example"
     assert Panpipe.Pandoc.Conversion.convert(span, to: :plain) == "Example"
   end
+
+  test "AST.Null" do
+    null = %Panpipe.AST.Null{}
+    assert Panpipe.Pandoc.Conversion.convert(null, to: :markdown) == "\n"
+    assert Panpipe.Pandoc.Conversion.convert(null, to: :plain) == "\n"
+  end
 end

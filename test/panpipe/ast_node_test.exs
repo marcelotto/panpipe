@@ -90,6 +90,16 @@ defmodule Panpipe.AST.NodeTest do
       assert transformed == Panpipe.ast! "Test: <http://example.com/foo>"
     end
 
+    test "replace a node with an empty list" do
+      assert {:ok, document} = Panpipe.ast "Test:<http://example.com/foo>"
+      assert transformed = Panpipe.Document.transform(document, fn
+               %Panpipe.AST.Link{} = link -> []
+               _ -> nil
+             end)
+
+      assert transformed == Panpipe.ast! "Test:"
+    end
+
     test "the transformation traversal continues on transformed paths" do
       assert {:ok, document} = Panpipe.ast("# <http://example.com/foo>",
                           from: {:markdown, %{disable: [:auto_identifiers]}})
