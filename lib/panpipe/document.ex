@@ -1,4 +1,8 @@
 defmodule Panpipe.Document do
+  @moduledoc """
+  The root `Panpipe.AST.Node`.
+  """
+
   use Panpipe.AST.Node, type: :block, fields: [:meta]
 
   def child_type(), do: :block
@@ -10,6 +14,11 @@ defmodule Panpipe.Document do
       "pandoc-api-version" => Panpipe.Pandoc.api_version(),
     }
   end
+
+  @doc """
+  Creates a document fragment from the given `node`.
+  """
+  def fragment(node)
 
   def fragment(%__MODULE__{} = document), do: document
 

@@ -60,6 +60,10 @@ end
 # Plain [Inline] - Plain text, not a paragraph
 
 defmodule Panpipe.AST.Plain do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Plain`.
+  """
+
   use Panpipe.AST.Node, type: :block
 
   def child_type(), do: :inline
@@ -87,6 +91,10 @@ end
 # Para [Inline] - Paragraph
 
 defmodule Panpipe.AST.Para do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Para`.
+  """
+
   use Panpipe.AST.Node, type: :block
 
   def child_type(), do: :inline
@@ -114,6 +122,10 @@ end
 # LineBlock [[Inline]] - Multiple non-breaking lines
 
 defmodule Panpipe.AST.LineBlock do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `LineBlock`.
+  """
+
   use Panpipe.AST.Node, type: :block
 
   def child_type(), do: :inline
@@ -147,6 +159,10 @@ end
 # CodeBlock Attr String - Code block (literal) with attributes
 
 defmodule Panpipe.AST.CodeBlock do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `CodeBlock`.
+  """
+
   use Panpipe.AST.Node, type: :block, fields: [:string, attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: nil
@@ -178,6 +194,10 @@ end
 # RawBlock Format String - Raw block
 
 defmodule Panpipe.AST.RawBlock do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `RawBlock`.
+  """
+
   use Panpipe.AST.Node, type: :block, fields: [:format, :string]
 
   def child_type(), do: nil
@@ -203,6 +223,10 @@ end
 # BlockQuote [Block] - Block quote (list of blocks)
 
 defmodule Panpipe.AST.BlockQuote do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `BlockQuote`.
+  """
+
   use Panpipe.AST.Node, type: :block
 
   def child_type(), do: :block
@@ -288,6 +312,13 @@ end
 # OrderedList ListAttributes [[Block]] - Ordered list (attributes and a list of items, each a list of blocks)
 
 defmodule Panpipe.AST.OrderedList do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `OrderedList`.
+
+  The list elements are stored as `Panpipe.AST.ListElement` structs and the
+  list attributes in a `Panpipe.AST.ListAttributes` struct.
+  """
+
   use Panpipe.AST.Node, type: :block, fields: [:list_attributes]
 
   def child_type(), do: :block # or ListElement?
@@ -319,6 +350,12 @@ end
 # BulletList [[Block]] - Bullet list (list of items, each a list of blocks)
 
 defmodule Panpipe.AST.BulletList do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `BulletList`.
+
+  The list elements are stored as `Panpipe.AST.ListElement` structs.
+  """
+
   use Panpipe.AST.Node, type: :block
 
   def child_type(), do: :block # or ListElement?
@@ -346,6 +383,10 @@ end
 # DefinitionList [([Inline], [[Block]])] - Definition list Each list item is a pair consisting of a term (a list of inlines) and one or more definitions (each a list of blocks)
 
 defmodule Panpipe.AST.DefinitionList do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `DefinitionList`.
+  """
+
   use Panpipe.AST.Node, type: :block
 
   def child_type(), do: :block # or :definition_tuple
@@ -389,6 +430,10 @@ end
 # Header Int Attr [Inline] - Header - level (integer) and text (inlines)
 
 defmodule Panpipe.AST.Header do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Header`.
+  """
+
   use Panpipe.AST.Node, type: :block, fields: [:level, attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :inline
@@ -418,6 +463,10 @@ end
 # HorizontalRule - Horizontal rule
 
 defmodule Panpipe.AST.HorizontalRule do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `HorizontalRule`.
+  """
+
   use Panpipe.AST.Node, type: :block
 
   def child_type(), do: nil
@@ -436,6 +485,10 @@ end
 # Table [Inline] [Alignment] [Double] [TableCell] [[TableCell]] - Table, with caption, column alignments (required), relative column widths (0 = default), column headers (each a list of blocks), and rows (each a list of lists of blocks)
 
 defmodule Panpipe.AST.Table do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Table`.
+  """
+
   use Panpipe.AST.Node, type: :block,
       fields: [:caption, :column_alignments, :column_widths, :header, :rows]
 
@@ -516,6 +569,10 @@ end
 # Div Attr [Block] - Generic block container with attributes
 
 defmodule Panpipe.AST.Div do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Div`.
+  """
+
   use Panpipe.AST.Node, type: :block, fields: [attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :block
@@ -547,6 +604,10 @@ end
 # Str String - Text (string)
 
 defmodule Panpipe.AST.Str do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Str`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:string]
 
   def child_type(), do: nil
@@ -565,6 +626,10 @@ end
 # Emph [Inline] - Emphasized text (list of inlines)
 
 defmodule Panpipe.AST.Emph do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Emph`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:children]
 
   def child_type(), do: :inline
@@ -587,6 +652,10 @@ end
 # Strong [Inline] - Strongly emphasized text (list of inlines)
 
 defmodule Panpipe.AST.Strong do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Strong`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:children]
 
   def child_type(), do: :inline
@@ -609,6 +678,10 @@ end
 # Strikeout [Inline] - Strikeout text (list of inlines)
 
 defmodule Panpipe.AST.Strikeout do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Strikeout`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:children]
 
   def child_type(), do: :inline
@@ -631,6 +704,10 @@ end
 # Superscript [Inline] - Superscripted text (list of inlines)
 
 defmodule Panpipe.AST.Superscript do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Superscript`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:children]
 
   def child_type(), do: :inline
@@ -653,6 +730,10 @@ end
 # Subscript [Inline] - Subscripted text (list of inlines)
 
 defmodule Panpipe.AST.Subscript do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Subscript`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:children]
 
   def child_type(), do: :inline
@@ -675,6 +756,10 @@ end
 # SmallCaps [Inline] - Small caps text (list of inlines)
 
 defmodule Panpipe.AST.SmallCaps do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Superscript`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:children]
 
   def child_type(), do: :inline
@@ -697,6 +782,10 @@ end
 # Quoted QuoteType [Inline] - Quoted text (list of inlines)
 
 defmodule Panpipe.AST.Quoted do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Quoted`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:type, :children]
 
   # Alignment of table columns
@@ -734,6 +823,12 @@ end
 # Cite [Citation] [Inline] - Citation (list of inlines)
 
 defmodule Panpipe.AST.Cite do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Cite`.
+
+  The `citations` are kept in `Panpipe.AST.Cite.Citation` structs.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:citations, :children]
 
   def child_type(), do: :inline
@@ -811,6 +906,10 @@ end
 # Code Attr String - Inline code (literal)
 
 defmodule Panpipe.AST.Code do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Code`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:string, attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: nil
@@ -842,6 +941,10 @@ end
 # Space - Inter-word space
 
 defmodule Panpipe.AST.Space do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Space`.
+  """
+
   use Panpipe.AST.Node, type: :inline
 
   def child_type(), do: nil
@@ -860,6 +963,10 @@ end
 # SoftBreak - Soft line break
 
 defmodule Panpipe.AST.SoftBreak do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `SoftBreak`.
+  """
+
   use Panpipe.AST.Node, type: :inline
 
   def child_type(), do: nil
@@ -878,6 +985,10 @@ end
 # LineBreak - Hard line break
 
 defmodule Panpipe.AST.LineBreak do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `LineBreak`.
+  """
+
   use Panpipe.AST.Node, type: :inline
 
   def child_type(), do: nil
@@ -897,6 +1008,10 @@ end
 
 # TODO: Does inline/block depend on math_type?
 defmodule Panpipe.AST.Math do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Math`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:type, :string]
 
   # Types of math elements
@@ -928,6 +1043,10 @@ end
 # RawInline Format String - Raw inline
 
 defmodule Panpipe.AST.RawInline do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `RawInline`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:format, :string]
 
   def child_type(), do: nil
@@ -953,6 +1072,10 @@ end
 # Link Attr [Inline] Target - Hyperlink: alt text (list of inlines), target
 
 defmodule Panpipe.AST.Link do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Link`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:children, :target, title: "", attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :inline
@@ -987,6 +1110,10 @@ end
 # Image Attr [Inline] Target - Image: alt text (list of inlines), target
 
 defmodule Panpipe.AST.Image do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Image`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:children, :target, title: "", attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :inline
@@ -1021,6 +1148,10 @@ end
 # Note [Block] - Footnote or endnote
 
 defmodule Panpipe.AST.Note do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Note`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:children]
 
   def child_type(), do: :block
@@ -1043,6 +1174,10 @@ end
 # Span Attr [Inline] - Generic inline container with attributes
 
 defmodule Panpipe.AST.Span do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Span`.
+  """
+
   use Panpipe.AST.Node, type: :inline, fields: [:children, attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :inline
@@ -1074,6 +1209,13 @@ end
 # Null - Nothing
 
 defmodule Panpipe.AST.Null do
+  @moduledoc """
+  A `Panpipe.AST.Null` for nodes of the Pandoc AST with the type `Null`.
+
+  This type of node can be useful when you want to remove another node with
+  the `Panpipe.AST.transform/2` function.
+  """
+
   use Panpipe.AST.Node, type: :block
 
   def child_type(), do: :nil

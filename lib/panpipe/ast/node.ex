@@ -1,29 +1,125 @@
 defmodule Panpipe.AST.Node do
+  @moduledoc """
+  Behaviour implemented by all nodes of the Panpipe AST.
 
+  The Panpipe AST is a Elixir representation of the
+  [Pandoc data structure for a format-neutral representation of documents](http://hackage.haskell.org/package/pandoc-types-1.17.5.4/docs/Text-Pandoc-Definition.html).
+  Each of the nodes of this AST data structure is a struct implementing the `Panpipe.AST.Node`
+  behaviour and directly matches the respective Pandoc element.
+
+  Each node type implements Elixir's `Enumerable` protocol as a pre-order tree
+  traversal.
+  """
+
+
+  # TODO: This attempt to define a type for struct implementing this behaviour is copied from RDF.Graph & co. and won't work probably ...
   @type t :: module
 
+  @doc """
+  Returns a list of the children of a node.
+  """
   @callback children(t) :: [t]
 
-  @callback block?() :: bool
-  @callback inline?() :: bool
+  @doc """
+  Returns the type of child expected for a AST node.
 
+  This function returns either `:block` or `:inline`.
+  """
   @callback child_type() :: atom
 
+  @doc """
+  Returns if the AST node module represents a block element.
+  """
+  @callback block?() :: bool
+
+  @doc """
+  Returns if the AST node module represents an inline element.
+  """
+  @callback inline?() :: bool
+
+  @doc """
+  Produces the Pandoc AST data structure of a Panpipe AST node.
+  """
   @callback to_pandoc(t) :: map
 
+  @doc """
+  Transforms an Panpipe AST node recursively.
+
+  see `Panpipe.AST.Node.transform/2`
+  """
   @callback transform(t, fun) :: t
 
 
   @shared_fields parent: nil
 
 
+  @doc """
+  Produces the Pandoc AST data structure of the given Panpipe AST `node`.
+
+  ## Examples
+
+      iex> %Panpipe.AST.Header{level: 1, children: [%Panpipe.AST.Str{string: "Example"}]}
+      ...> |> Panpipe.AST.Node.to_pandoc()
+      %{
+        "c" => [1, ["", [], []], [%{"c" => "Example", "t" => "Str"}]],
+        "t" => "Header"
+      }
+
+  """
   def to_pandoc(%mod{} = node), do: mod.to_pandoc(node)
 
+  @doc """
+  Transforms the AST under the given Panpipe AST `node` by applying the given transformation function recursively.
+
+  The given function will be passed all nodes in pre-order and will replace those
+  nodes for which the transformation function `fun` returns a  non-`nil` replacement
+  value.
+  A node can also be replaced with a sequence of new nodes by returning a list of
+  nodes in the transformation function.
+  If you want to remove a node, you can return an empty list or a `Panpipe.AST.Null`
+  node.
+
+  The transformation will be applied recursively also on children of the replaced
+  values. You can prohibit that by returning the replacement in a halt tuple like
+  this: `{:halt, replacement}`.
+
+  ## Examples
+
+      Panpipe.ast!(input: "file.md")
+      |> Panpipe.transform(fn
+         %Panpipe.AST.Header{} = header ->
+           %Panpipe.AST.Header{header | level: header.level + 1}
+         _ -> nil
+       end)
+
+      Panpipe.ast!(input: "file.md")
+      |> Panpipe.transform(fn
+         %Panpipe.AST.Header{} = header ->
+           {:halt, %Panpipe.AST.Header{header | level: header.level + 1}}
+         _ -> nil
+       end)
+
+  """
   def transform(%mod{} = node, fun), do: mod.transform(node, fun)
 
+  @doc """
+  Returns if the given AST `node` is a block element.
+  """
+  def block?(node)
   def block?(%mod{}), do: mod.block?()
+
+  @doc """
+  Returns if the given AST `node` is an inline element.
+  """
+  def inline?(node)
   def inline?(%mod{}), do: mod.inline?()
 
+  @doc """
+  Returns the type of child expected for the given AST `node`.
+
+  This function returns either `:block` or `:inline`.
+  """
+  def child_type(node)
   def child_type(%mod{}), do: mod.child_type()
 
 
@@ -38,6 +134,7 @@ defmodule Panpipe.AST.Node do
 
       defstruct unquote(fields)
 
+      def children(node)
       def children(%{children: children}), do: children
       def children(_), do: []
 
@@ -156,5 +253,4 @@ defmodule Panpipe.AST.Node do
       end
     end
   end
-
 end
