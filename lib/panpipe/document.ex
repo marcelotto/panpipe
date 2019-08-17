@@ -10,7 +10,7 @@ defmodule Panpipe.Document do
   def to_pandoc(%Panpipe.Document{children: children, meta: meta}) do
     %{
       "blocks" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1),
-      "meta" => %{}, # TODO: meta
+      "meta" => meta || %{},
       "pandoc-api-version" => Panpipe.Pandoc.api_version(),
     }
   end
@@ -39,7 +39,7 @@ defimpl_ex Panpipe.Pandoc.Document, %{"blocks" => _, "pandoc-api-version" => _},
   def to_panpipe(%{"blocks" => blocks, "meta" => meta}) do
     %Panpipe.Document{
       children: blocks |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
-      meta: nil, # TODO: meta
+      meta: meta, # TODO: create a Panpipe.AST.Meta struct
     }
   end
 end
