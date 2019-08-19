@@ -93,7 +93,7 @@ defmodule Panpipe.AST.NodeTest do
     test "replace a node with an empty list" do
       assert {:ok, document} = Panpipe.ast "Test:<http://example.com/foo>"
       assert transformed = Panpipe.Document.transform(document, fn
-               %Panpipe.AST.Link{} = link -> []
+               %Panpipe.AST.Link{} -> []
                _ -> nil
              end)
 

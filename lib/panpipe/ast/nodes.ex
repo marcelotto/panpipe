@@ -286,6 +286,12 @@ defmodule Panpipe.AST.ListAttributes do
     "UpperAlpha"
   ]
 
+  @doc """
+  The possible values for the `number_style` field.
+  """
+  def styles(), do: @styles
+
+
   # The various delimiters of list numbers
   @delimiters [
     "DefaultDelim",
@@ -293,6 +299,12 @@ defmodule Panpipe.AST.ListAttributes do
     "OneParen",
     "TwoParens"
   ]
+
+  @doc """
+  The possible values for the `number_delimiter` field.
+  """
+  def delimiters(), do: @delimiters
+
 
   def from_pandoc([start, %{"t" => number_style}, %{"t" => number_delimiter}]) do
     %__MODULE__{
@@ -499,6 +511,12 @@ defmodule Panpipe.AST.Table do
     "AlignCenter",
     "AlignDefault",
   ]
+
+  @doc """
+  The possible values for the `column_alignments` field.
+  """
+  def alignments(), do: @alignments
+
 
   def child_type(), do: :inline # or cells?
 
@@ -788,11 +806,16 @@ defmodule Panpipe.AST.Quoted do
 
   use Panpipe.AST.Node, type: :inline, fields: [:type, :children]
 
-  # Alignment of table columns
   @quote_types [
     "SingleQuote",
     "DoubleQuote",
   ]
+
+  @doc """
+  The possible values for the `type` field.
+  """
+  def quote_types(), do: @quote_types
+
 
   def child_type(), do: :inline
 
@@ -870,6 +893,12 @@ defmodule Panpipe.AST.Cite.Citation do
     "SuppressAuthor",
     "NormalCitation",
   ]
+
+  @doc """
+  The possible values for the `mode` field.
+  """
+  def modes(), do: @modes
+
 
   def from_pandoc(%{
         "citationHash" => hash,
@@ -1020,6 +1049,12 @@ defmodule Panpipe.AST.Math do
     "DisplayMath",
   ]
 
+  @doc """
+  The possible values for the `type` field.
+  """
+  def math_types(), do: @math_types
+
+  
   def child_type(), do: nil
 
   def to_pandoc(%__MODULE__{type: math_type, string: string}) do
