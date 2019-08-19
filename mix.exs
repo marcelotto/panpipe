@@ -1,14 +1,49 @@
 defmodule Panpipe.MixProject do
   use Mix.Project
 
+  @repo_url "https://github.com/marcelotto/panpipe"
+
+  @version File.read!("VERSION") |> String.trim
+
+
   def project do
     [
       app: :panpipe,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       compilers: Mix.compilers ++ [:protocol_ex],
-      deps: deps()
+      deps: deps(),
+
+      # Hex
+      package: package(),
+      description: description(),
+
+      # Docs
+      name: "Panpipe",
+      docs: [
+        source_url: @repo_url,
+        source_ref: "v#{@version}",
+        extras: ["CHANGELOG.md"],
+      ]
+    ]
+  end
+
+  defp description do
+    """
+    An Elixir wrapper around Pandoc.
+    """
+  end
+
+  defp package do
+    [
+      maintainers: ["Marcel Otto"],
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => @repo_url,
+        "Changelog" => @repo_url <> "/blob/master/CHANGELOG.md",
+      },
+      files: ~w[lib priv mix.exs VERSION *.md]
     ]
   end
 
@@ -20,12 +55,12 @@ defmodule Panpipe.MixProject do
 
   defp deps do
     [
-      {:porcelain, "~> 2.0"},
       {:jason, "~> 1.0"},
       {:protocol_ex, "~> 0.4"},
-      {:stream_data, "~> 0.4", only: :test},
+      {:porcelain, "~> 2.0"},
 
       # Development
+      {:stream_data, "~> 0.4", only: :test},
       {:credo, "~> 1.1",   only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.21", only: :dev, runtime: false},
     ]
