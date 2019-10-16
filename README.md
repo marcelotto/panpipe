@@ -28,8 +28,6 @@ def deps do
 end
 ```
 
-At the moment, [Porcelain](https://github.com/alco/porcelain) is used to make the Pandoc calls. This unfortunately means you'll also must have [Goon installed](https://github.com/alco/goon#goon). (I hope to get rid of this dependency by replacing it with a pure Ports-based implementation - PRs are very welcome).
-
 
 ## Usage
 

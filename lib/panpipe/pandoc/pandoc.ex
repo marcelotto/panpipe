@@ -128,10 +128,10 @@ defmodule Panpipe.Pandoc do
   """
   def call(input_or_opts, opts \\ nil) do
     opts = normalize_opts(input_or_opts, opts)
-    with %Porcelain.Result{status: 0} = result <- exec(opts) do
+    with {:ok, %Rambo{status: 0} = result} <- exec(opts) do
       {:ok, output(result, opts)}
     else
-      error ->
+      {:error, error} ->
         {:error, error}
     end
   end
@@ -158,15 +158,14 @@ defmodule Panpipe.Pandoc do
   defp exec(opts) do
     case Keyword.pop(opts, :input) do
       {input_file, opts} when is_binary(input_file) ->
-        Porcelain.exec(@pandoc, [input_file | build_opts(opts)])
+        Rambo.run(@pandoc, [input_file | build_opts(opts)])
 
       {{:data, data}, opts} ->
-        # TODO: This depends on Goon to be installed and configured properly, since the basic Porcelain driver won't work: <https://github.com/alco/porcelain/issues/37>
-        Porcelain.exec(@pandoc, build_opts(opts), in: data, err: :out)
+        Rambo.run(@pandoc, build_opts(opts), in: data)
 
       {nil, _} ->
         if non_conversion_command?(opts) do
-          Porcelain.exec(@pandoc, build_opts(opts))
+          Rambo.run(@pandoc, build_opts(opts))
         else
           raise "No input specified."
         end

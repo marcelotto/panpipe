@@ -57,7 +57,7 @@ defmodule Panpipe.MixProject do
     [
       {:jason, "~> 1.0"},
       {:protocol_ex, "~> 0.4"},
-      {:porcelain, "~> 2.0"},
+      {:rambo, "~> 0.2"},
 
       # Development
       {:stream_data, "~> 0.4", only: :test},
