@@ -40,6 +40,7 @@ iex> Panpipe.pandoc("# Example doc", to: :latex)
 {:ok, "\\hypertarget{example-doc}{%\n\\section{Example doc}\\label{example-doc}}\n"}
 iex> Panpipe.pandoc(input: "file.md", output: "output.tex")
 {:ok, nil}
+iex> Panpipe.pandoc(input: "file.md", output: "output.pdf", pdf_engine: :xelatex, variable: "linkcolor=blue")
 ```
 
 As you can see the `Panpipe.pandoc/2` returns an ok tuple in the success with the result as string if no output file is specified, or `nil` if the output was written to a file. If want directly get the result and fail in error cases, you can use the `Panpipe.pandoc!/2` function.
