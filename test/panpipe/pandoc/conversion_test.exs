@@ -10,9 +10,11 @@ defmodule Panpipe.Pandoc.ConversionTest do
 
   test "AST.Header" do
     header = %Panpipe.AST.Header{level: 1, children: [%Panpipe.AST.Str{string: "Example"}]}
-    assert Panpipe.Pandoc.Conversion.convert(header, to: :markdown) == "Example\n=======\n"
-    assert Panpipe.Pandoc.Conversion.convert(header, to: :markdown, atx: true) == "# Example\n"
-    assert Panpipe.Pandoc.Conversion.convert(header, to: :plain) == "\n\nEXAMPLE\n"
+    assert Panpipe.Pandoc.Conversion.convert(header, to: :markdown) == "# Example\n"
+    assert Panpipe.Pandoc.Conversion.convert(header, to: :markdown, markdown_headings: "atx") == "# Example\n"
+    assert Panpipe.Pandoc.Conversion.convert(header, to: :markdown, markdown_headings: "setext") == "Example\n=======\n"
+    assert Panpipe.Pandoc.Conversion.convert(header, to: :plain) == "Example\n"
+    assert Panpipe.Pandoc.Conversion.convert(header, to: {:plain, [:gutenberg]}) == "\n\nEXAMPLE\n"
   end
 
   test "AST.Para" do
@@ -149,13 +151,15 @@ defmodule Panpipe.Pandoc.ConversionTest do
   test "AST.Emph" do
     emph = %Panpipe.AST.Emph{children: %Panpipe.AST.Str{string: "Example"}}
     assert Panpipe.Pandoc.Conversion.convert(emph, to: :markdown) == "*Example*"
-    assert Panpipe.Pandoc.Conversion.convert(emph, to: :plain) == "_Example_"
+    assert Panpipe.Pandoc.Conversion.convert(emph, to: :plain) == "Example"
+    assert Panpipe.Pandoc.Conversion.convert(emph, to: {:plain, [:gutenberg]}) == "_Example_"
   end
 
   test "AST.Strong" do
     strong = %Panpipe.AST.Strong{children: %Panpipe.AST.Str{string: "Example"}}
     assert Panpipe.Pandoc.Conversion.convert(strong, to: :markdown) == "**Example**"
-    assert Panpipe.Pandoc.Conversion.convert(strong, to: :plain) == "EXAMPLE"
+    assert Panpipe.Pandoc.Conversion.convert(strong, to: :plain) == "Example"
+    assert Panpipe.Pandoc.Conversion.convert(strong, to: {:plain, [:gutenberg]}) == "EXAMPLE"
   end
 
   test "AST.Strikeout" do
@@ -207,7 +211,8 @@ defmodule Panpipe.Pandoc.ConversionTest do
 
   test "AST.RawInline" do
     raw_inline = %Panpipe.AST.RawInline{format: "html", string: "<em>"}
-    assert Panpipe.Pandoc.Conversion.convert(raw_inline, to: :markdown) == "<em>"
+    assert Panpipe.Pandoc.Conversion.convert(raw_inline, to: :markdown) == "`<em>`{=html}"
+    assert Panpipe.Pandoc.Conversion.convert(raw_inline, to: {:markdown, %{disable: [:raw_attribute]}}) == "<em>"
     assert Panpipe.Pandoc.Conversion.convert(raw_inline, to: :plain) == ""
   end
 
