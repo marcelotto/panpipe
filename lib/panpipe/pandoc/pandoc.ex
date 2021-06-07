@@ -9,7 +9,7 @@ defmodule Panpipe.Pandoc do
 
   @pandoc "pandoc"
 
-  @api_version [1, 17, 5, 4]
+  @api_version [1, 22]
 
   @doc """
   The Pandoc API version against which Panpipe operates.
