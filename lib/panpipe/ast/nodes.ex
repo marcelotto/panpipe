@@ -737,7 +737,14 @@ defmodule Panpipe.AST.Table do
   """
 
   use Panpipe.AST.Node, type: :block,
-                        fields: [:col_spec, :table_head, :table_bodies, :table_foot, caption: %Panpipe.AST.Caption{}, attr: %Panpipe.AST.Attr{}]
+                        fields: [
+                          :col_spec,
+                          table_head: %Panpipe.AST.TableHead{},
+                          table_bodies: [],
+                          table_foot: %Panpipe.AST.TableFoot{},
+                          caption: %Panpipe.AST.Caption{},
+                          attr: %Panpipe.AST.Attr{}
+                        ]
 
   def child_type(), do: :inline # or cells?
 
