@@ -30,7 +30,7 @@ defmodule Panpipe.PandocTest do
     end
 
     test "with input string and options" do
-      assert {:ok, %{"blocks" => [%{"c" => _}]}} = Pandoc.ast("# Test", base_header_level: 3)
+      assert {:ok, %{"blocks" => [%{"c" => _}]}} = Pandoc.ast("# Test", shift_heading_level_by: 3)
     end
   end
 end
