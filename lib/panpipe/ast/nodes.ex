@@ -244,7 +244,7 @@ defimpl_ex Panpipe.Pandoc.BlockQuote, %{"t" => "BlockQuote"}, for: Panpipe.Pando
 
   def to_panpipe(%{"c" => children}) do
     %Panpipe.AST.BlockQuote{
-      children: children |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
+      children: Enum.map(children, &Panpipe.Pandoc.AST.Node.to_panpipe/1),
     }
   end
 end
@@ -494,15 +494,37 @@ end
 
 
 ################################################################################
-# Table [Inline] [Alignment] [Double] [TableCell] [[TableCell]] - Table, with caption, column alignments (required), relative column widths (0 = default), column headers (each a list of blocks), and rows (each a list of lists of blocks)
+# Helper struct: Caption
 
-defmodule Panpipe.AST.Table do
-  @moduledoc """
-  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Table`.
-  """
+defmodule Panpipe.AST.Caption do
+  defstruct short_caption: nil, blocks: [], parent: nil
 
-  use Panpipe.AST.Node, type: :block,
-      fields: [:caption, :column_alignments, :column_widths, :header, :rows]
+  def from_pandoc([short_caption, blocks]) do
+    %__MODULE__{
+      short_caption: short_caption,
+      blocks: Enum.map(blocks, &Panpipe.Pandoc.AST.Node.to_panpipe/1)
+    }
+  end
+
+  def to_pandoc(%__MODULE__{short_caption: short_caption, blocks: blocks}) do
+    [
+      short_caption,
+      Enum.map(blocks, &Panpipe.AST.Node.to_pandoc/1)
+    ]
+  end
+
+  def transform(%__MODULE__{} = caption, table, fun) do
+    %__MODULE__{caption |
+      blocks: Panpipe.AST.Node.do_transform_children(caption.blocks, %{caption | parent: table}, fun)
+    }
+  end
+end
+
+################################################################################
+# Helper struct: ColSpec
+
+defmodule Panpipe.AST.ColSpec do
+  defstruct alignment: "AlignDefault", col_width: "ColWidthDefault"
 
   # Alignment of table columns
   @alignments [
@@ -513,28 +535,227 @@ defmodule Panpipe.AST.Table do
   ]
 
   @doc """
-  The possible values for the `column_alignments` field.
+  The possible values for the `alignment` field.
   """
   def alignments(), do: @alignments
 
+  def from_pandoc([%{"t" => alignment}, col_width]) do
+    %__MODULE__{alignment: alignment, col_width: from_pandoc_col_width(col_width)}
+  end
+
+  def from_pandoc_col_width(%{"t" => col_width}), do: col_width
+  def from_pandoc_col_width(col_width), do: col_width
+
+  def to_pandoc(%__MODULE__{alignment: alignment, col_width: col_width}) do
+    [%{"t" => alignment}, to_pandoc_col_width(col_width)]
+  end
+
+  def to_pandoc_col_width(col_width) when is_binary(col_width), do: %{"t" => col_width}
+  def to_pandoc_col_width(col_width), do: col_width
+end
+
+################################################################################
+# Helper struct: TableHead
+
+defmodule Panpipe.AST.TableHead do
+  defstruct rows: [], attr: %Panpipe.AST.Attr{}, parent: nil
+
+  def from_pandoc([attr, rows]) do
+    %__MODULE__{
+      rows: Enum.map(rows, &Panpipe.AST.Row.from_pandoc/1),
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
+    }
+  end
+
+  def to_pandoc(%__MODULE__{attr: attr, rows: rows}) do
+    [
+      Panpipe.AST.Attr.to_pandoc(attr),
+      Enum.map(rows, &Panpipe.AST.Row.to_pandoc/1),
+    ]
+  end
+
+  def children(%__MODULE__{rows: rows}), do: Enum.flat_map(rows, &Panpipe.AST.Row.children/1)
+
+  def transform(%__MODULE__{} = table_head, table, fun) do
+    %__MODULE__{table_head |
+      rows: Enum.map(table_head.rows, &(Panpipe.AST.Row.transform(&1, %{table_head | parent: table}, fun)))
+    }
+  end
+end
+
+################################################################################
+# Helper struct: TableFoot
+
+defmodule Panpipe.AST.TableFoot do
+  defstruct rows: [], attr: %Panpipe.AST.Attr{}, parent: nil
+
+  def from_pandoc([attr, rows]) do
+    %__MODULE__{
+      rows: Enum.map(rows, &Panpipe.AST.Row.from_pandoc/1),
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
+    }
+  end
+
+  def to_pandoc(%__MODULE__{attr: attr, rows: rows}) do
+    [
+      Panpipe.AST.Attr.to_pandoc(attr),
+      Enum.map(rows, &Panpipe.AST.Row.to_pandoc/1),
+    ]
+  end
+
+  def children(%__MODULE__{rows: rows}), do: Enum.flat_map(rows, &Panpipe.AST.Row.children/1)
+
+  def transform(%__MODULE__{} = table_foot, table, fun) do
+    %__MODULE__{table_foot |
+      rows: Enum.map(table_foot.rows, &(Panpipe.AST.Row.transform(&1, %{table_foot | parent: table}, fun)))
+    }
+  end
+end
+
+################################################################################
+# Helper struct: TableBody
+
+defmodule Panpipe.AST.TableBody do
+  defstruct row_head_columns: 0,
+            intermediate_head_rows: [],
+            intermediate_body_rows: [],
+            attr: %Panpipe.AST.Attr{},
+            parent: nil
+
+  def from_pandoc([attr, row_head_columns, intermediate_head_rows, intermediate_body_rows]) do
+    %__MODULE__{
+      row_head_columns: row_head_columns,
+      intermediate_head_rows: Enum.map(intermediate_head_rows, &Panpipe.AST.Row.from_pandoc/1),
+      intermediate_body_rows: Enum.map(intermediate_body_rows, &Panpipe.AST.Row.from_pandoc/1),
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
+    }
+  end
+
+  def to_pandoc(%__MODULE__{} = table_body) do
+    [
+      Panpipe.AST.Attr.to_pandoc(table_body.attr),
+      table_body.row_head_columns,
+      Enum.map(table_body.intermediate_head_rows, &Panpipe.AST.Row.to_pandoc/1),
+      Enum.map(table_body.intermediate_body_rows, &Panpipe.AST.Row.to_pandoc/1),
+    ]
+  end
+
+  def children(%__MODULE__{
+    intermediate_head_rows: intermediate_head_rows,
+    intermediate_body_rows: intermediate_body_rows
+  }) do
+    Enum.flat_map(intermediate_head_rows, &Panpipe.AST.Row.children/1) ++
+      Enum.flat_map(intermediate_body_rows, &Panpipe.AST.Row.children/1)
+  end
+
+  def transform(%__MODULE__{} = table_foot, table, fun) do
+    table_foot_with_parent =%{table_foot | parent: table}
+    %__MODULE__{table_foot |
+      intermediate_head_rows:
+        Enum.map(table_foot.intermediate_head_rows, &(Panpipe.AST.Row.transform(&1, table_foot_with_parent, fun))),
+      intermediate_body_rows:
+        Enum.map(table_foot.intermediate_body_rows, &(Panpipe.AST.Row.transform(&1, table_foot_with_parent, fun)))
+    }
+  end
+end
+
+################################################################################
+# Helper struct: Row
+
+defmodule Panpipe.AST.Row do
+  defstruct cells: [], attr: %Panpipe.AST.Attr{}, parent: nil
+
+  def from_pandoc([attr, cells]) do
+    %__MODULE__{
+      cells: Enum.map(cells, &Panpipe.AST.Cell.from_pandoc/1),
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
+    }
+  end
+
+  def to_pandoc(%__MODULE__{attr: attr, cells: cells}) do
+    [
+      Panpipe.AST.Attr.to_pandoc(attr),
+      Enum.map(cells, &Panpipe.AST.Cell.to_pandoc/1),
+    ]
+  end
+
+  def children(%__MODULE__{cells: cells}), do: Enum.flat_map(cells, &Panpipe.AST.Cell.children/1)
+
+  def transform(%__MODULE__{} = row, parent, fun) do
+    %__MODULE__{row |
+      cells: Enum.map(row.cells, &(Panpipe.AST.Cell.transform(&1, %{row | parent: parent}, fun)))
+    }
+  end
+end
+
+################################################################################
+# Helper struct: Cell
+
+defmodule Panpipe.AST.Cell do
+  defstruct blocks: [],
+            alignment: "AlignDefault",
+            row_span: 1,
+            col_span: 1,
+            attr: %Panpipe.AST.Attr{},
+            parent: nil
+
+  def from_pandoc([attr, %{"t" => alignment}, row_span, col_span, blocks]) do
+    %__MODULE__{
+      blocks: Enum.map(blocks, &Panpipe.Pandoc.AST.Node.to_panpipe/1),
+      alignment: alignment,
+      row_span: row_span,
+      col_span: col_span,
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
+    }
+  end
+
+  def to_pandoc(%__MODULE__{} = cell) do
+    [
+      Panpipe.AST.Attr.to_pandoc(cell.attr),
+      %{"t" => cell.alignment},
+      cell.row_span,
+      cell.col_span,
+      Enum.map(cell.blocks, &Panpipe.AST.Node.to_pandoc/1)
+    ]
+  end
+
+  def children(%__MODULE__{blocks: blocks}), do: blocks
+
+  def transform(%__MODULE__{} = cell, parent, fun) do
+    %__MODULE__{cell |
+      blocks: Panpipe.AST.Node.do_transform_children(cell.blocks, %{cell | parent: parent}, fun)
+    }
+  end
+end
+
+################################################################################
+# Table Attr Caption [ColSpec] TableHead [TableBody] TableFoot - Table, with attributes, caption, optional short caption, column alignments and widths (required), table head, table bodies, and table foot
+
+defmodule Panpipe.AST.Table do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Table`.
+  """
+
+  use Panpipe.AST.Node, type: :block,
+                        fields: [:col_spec, :table_head, :table_bodies, :table_foot, caption: %Panpipe.AST.Caption{}, attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :inline # or cells?
 
   def children(%__MODULE__{} = table) do
     # TODO: test in traversal tests, if we need to flatten the children
     # TODO #167558619: During traversal, it would be good if some context information would be available, like if a link was part of the table caption or a table cell etc.
-    table.caption ++ List.flatten(table.header) ++ List.flatten(table.rows)
+    table.caption.blocks ++
+    Panpipe.AST.TableHead.children(table.table_head) ++
+    Enum.flat_map(table.table_bodies, &Panpipe.AST.TableBody.children/1) ++
+    Panpipe.AST.TableHead.children(table.table_foot)
   end
 
   def transform(%__MODULE__{} = table, fun) do
     %{table |
-      caption: Panpipe.AST.Node.do_transform_children(table.caption, table, fun),
-      header: Enum.map(table.header, &(Panpipe.AST.Node.do_transform_children(&1, table, fun))),
-      rows: Enum.map(table.rows, fn row ->
-              Enum.map(row, fn columns ->
-                Panpipe.AST.Node.do_transform_children(columns, table, fun)
-              end)
-            end)
+      caption: Panpipe.AST.Caption.transform(table.caption, table, fun),
+      table_head: Panpipe.AST.TableHead.transform(table.table_head, table, fun),
+      table_bodies: Enum.map(table.table_bodies, &Panpipe.AST.TableBody.transform(&1, table, fun)),
+      table_foot: Panpipe.AST.TableFoot.transform(table.table_foot, table, fun)
     }
   end
 
@@ -542,17 +763,12 @@ defmodule Panpipe.AST.Table do
     %{
       "t" => "Table",
       "c" => [
-        Enum.map(table.caption, &Panpipe.AST.Node.to_pandoc/1),
-        Enum.map(table.column_alignments, &(%{"t" => &1})),
-        table.column_widths,
-        Enum.map(table.header, fn column ->
-          Enum.map(column, &Panpipe.AST.Node.to_pandoc/1)
-        end),
-        Enum.map(table.rows, fn row ->
-          Enum.map(row, fn column ->
-            Enum.map(column, &Panpipe.AST.Node.to_pandoc/1)
-          end)
-        end)
+        Panpipe.AST.Attr.to_pandoc(table.attr),
+        Panpipe.AST.Caption.to_pandoc(table.caption),
+        Enum.map(table.col_spec, &Panpipe.AST.ColSpec.to_pandoc/1),
+        Panpipe.AST.TableHead.to_pandoc(table.table_head),
+        Enum.map(table.table_bodies, &Panpipe.AST.TableBody.to_pandoc/1),
+        Panpipe.AST.TableFoot.to_pandoc(table.table_foot)
       ]
     }
   end
@@ -561,23 +777,14 @@ end
 defimpl_ex Panpipe.Pandoc.Table, %{"t" => "Table"}, for: Panpipe.Pandoc.AST.Node do
   @moduledoc false
 
-  def to_panpipe(%{"c" => [caption, column_alignments, column_widths, header, rows]}) do
+  def to_panpipe(%{"c" => [attr, caption, col_spec, table_head, table_body, table_foot]}) do
     %Panpipe.AST.Table{
-      caption:
-        Enum.map(caption, &Panpipe.Pandoc.AST.Node.to_panpipe/1),
-      column_alignments:
-        Enum.map(column_alignments, fn %{"t" => alignment} -> alignment end),
-      column_widths: column_widths,
-      header:
-        Enum.map(header, fn column ->
-          Enum.map(column, &Panpipe.Pandoc.AST.Node.to_panpipe/1)
-        end),
-      rows:
-        Enum.map(rows, fn row ->
-          Enum.map(row, fn column ->
-            Enum.map(column, &Panpipe.Pandoc.AST.Node.to_panpipe/1)
-          end)
-        end)
+      caption: Panpipe.AST.Caption.from_pandoc(caption),
+      col_spec: Enum.map(col_spec, &Panpipe.AST.ColSpec.from_pandoc/1),
+      table_head: Panpipe.AST.TableHead.from_pandoc(table_head),
+      table_bodies: Enum.map(table_body, &Panpipe.AST.TableBody.from_pandoc/1),
+      table_foot: Panpipe.AST.TableFoot.from_pandoc(table_foot),
+      attr: Panpipe.AST.Attr.from_pandoc(attr)
     }
   end
 end

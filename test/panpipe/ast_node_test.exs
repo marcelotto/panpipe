@@ -120,7 +120,7 @@ defmodule Panpipe.AST.NodeTest do
                               from: {:markdown, %{disable: [:auto_identifiers]}}
 
       assert transformed = Panpipe.Document.transform(document, fn
-               %Panpipe.AST.Header{} = header->
+               %Panpipe.AST.Header{} = header ->
                  [
                   header,
                    %Panpipe.AST.Para{children: %Panpipe.AST.Str{string: "Foo"}},

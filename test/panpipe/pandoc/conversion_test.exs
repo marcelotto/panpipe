@@ -105,22 +105,63 @@ defmodule Panpipe.Pandoc.ConversionTest do
   test "AST.Table" do
     table =
       %Panpipe.AST.Table{
-        caption: %Panpipe.AST.Str{string: "Example table 1"},
-        column_alignments: ["AlignDefault", "AlignDefault"],
-        column_widths: [0, 0],
-        header: [
-          [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "Column1"}]}],
-          [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "Column2"}]}]
-        ],
-        rows: [
-          [
-            [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "cell11"}]}],
-            [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "cell12"}]}]
-          ],
-          [
-            [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "cell21"}]}],
-            [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "cell22"}]}]
+        caption: %Panpipe.AST.Caption{
+          blocks: [
+            %Panpipe.AST.Plain{
+              children: [
+                %Panpipe.AST.Str{string: "Example"},
+                %Panpipe.AST.Space{},
+                %Panpipe.AST.Str{string: "table"},
+                %Panpipe.AST.Space{},
+                %Panpipe.AST.Str{string: "1"}
+              ]
+            }
           ]
+        },
+        col_spec: [
+          %Panpipe.AST.ColSpec{alignment: "AlignLeft", col_width: "ColWidthDefault"},
+          %Panpipe.AST.ColSpec{alignment: "AlignLeft", col_width: "ColWidthDefault"}
+        ],
+        table_head: %Panpipe.AST.TableHead{
+          rows: [
+            %Panpipe.AST.Row{
+              cells: [
+                %Panpipe.AST.Cell{
+                  blocks: [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "Column1"}]}],
+                },
+                %Panpipe.AST.Cell{
+                  blocks: [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "Column2"}]}],
+                }
+              ]
+            }
+          ]
+        },
+        table_bodies: [
+          %Panpipe.AST.TableBody{
+            attr: %Panpipe.AST.Attr{},
+            intermediate_body_rows: [
+              %Panpipe.AST.Row{
+                cells: [
+                  %Panpipe.AST.Cell{
+                    blocks: [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "cell11"}]}]
+                  },
+                  %Panpipe.AST.Cell{
+                    blocks: [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "cell12"}]}]
+                  }
+                ]
+              },
+              %Panpipe.AST.Row{
+                cells: [
+                  %Panpipe.AST.Cell{
+                    blocks: [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "cell21"}]}]
+                  },
+                  %Panpipe.AST.Cell{
+                    blocks: [%Panpipe.AST.Plain{children: [%Panpipe.AST.Str{string: "cell22"}]}]
+                  }
+                ]
+              }
+            ]
+          }
         ]
       }
 

@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+- Upgrade to Pandoc API version 1.22
+  - adapt to the completely redesigned AST structure for tables
+
+[Compare v0.1.1...HEAD](https://github.com/marcelotto/panpipe/compare/v0.1.1...HEAD)
+
+
+
 ## v0.1.1 - 2019-10-16
 
 ### Changed
