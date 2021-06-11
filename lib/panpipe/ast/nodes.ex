@@ -881,6 +881,32 @@ end
 
 
 ################################################################################
+# Underling [Inline] - Underlined text (list of inlines)
+
+defmodule Panpipe.AST.Underline do
+  @moduledoc """
+  A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Underline`.
+  """
+
+  use Panpipe.AST.Node, type: :inline, fields: [:children]
+
+  def child_type(), do: :inline
+
+  def to_pandoc(%__MODULE__{children: children}) do
+    %{"t" => "Underline", "c" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)}
+  end
+end
+
+defimpl_ex Panpipe.Pandoc.Underline, %{"t" => "Underline"}, for: Panpipe.Pandoc.AST.Node do
+  @moduledoc false
+
+  def to_panpipe(%{"c" => children}) do
+    %Panpipe.AST.Underline{children: Enum.map(children, &Panpipe.Pandoc.AST.Node.to_panpipe/1)}
+  end
+end
+
+
+################################################################################
 # Strong [Inline] - Strongly emphasized text (list of inlines)
 
 defmodule Panpipe.AST.Strong do

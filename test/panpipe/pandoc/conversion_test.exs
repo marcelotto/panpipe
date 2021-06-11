@@ -196,6 +196,13 @@ defmodule Panpipe.Pandoc.ConversionTest do
     assert Panpipe.Pandoc.Conversion.convert(emph, to: {:plain, [:gutenberg]}) == "_Example_"
   end
 
+  test "AST.Underline" do
+    underline = %Panpipe.AST.Underline{children: %Panpipe.AST.Str{string: "Example"}}
+    assert Panpipe.Pandoc.Conversion.convert(underline, to: :markdown) == "[Example]{.ul}"
+    assert Panpipe.Pandoc.Conversion.convert(underline, to: :textile) == "+Example+"
+    assert Panpipe.Pandoc.Conversion.convert(underline, to: :plain) == "Example"
+  end
+
   test "AST.Strong" do
     strong = %Panpipe.AST.Strong{children: %Panpipe.AST.Str{string: "Example"}}
     assert Panpipe.Pandoc.Conversion.convert(strong, to: :markdown) == "**Example**"

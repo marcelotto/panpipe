@@ -8,7 +8,14 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 ## Unreleased
 
 - Upgrade to Pandoc API version 1.22
-  - adapt to the completely redesigned AST structure for tables
+
+### Added
+
+- Add new AST node struct `Panpipe.AST.Underline`
+
+### Changed
+
+- Adapt to the completely redesigned AST structure for tables
 
 [Compare v0.1.1...HEAD](https://github.com/marcelotto/panpipe/compare/v0.1.1...HEAD)
 
