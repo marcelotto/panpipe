@@ -13,6 +13,7 @@
 -compact_definition_lists
 +definition_lists
 -east_asian_line_breaks
+-element_citations
 -emoji
 -empty_paragraphs
 -epub_html_exts
@@ -47,6 +48,7 @@
 +multiline_tables
 +native_divs
 +native_spans
+-native_numbering
 -ntb
 -old_dashes
 +pandoc_title_block
@@ -54,6 +56,8 @@
 +raw_attribute
 +raw_html
 +raw_tex
+-raw_markdown
+-rebase_relative_paths
 +shortcut_reference_links
 +simple_tables
 +smart
@@ -69,4 +73,9 @@
 +tex_math_dollars
 -tex_math_double_backslash
 -tex_math_single_backslash
+-xrefs_name
+-xrefs_number
 +yaml_metadata_block
+-gutenberg
+-attributes
+-sourcepos

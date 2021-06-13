@@ -1,8 +1,12 @@
 asciidoc
 asciidoctor
 beamer
+biblatex
+bibtex
 commonmark
+commonmark_x
 context
+csljson
 docbook
 docbook4
 docbook5
@@ -21,6 +25,9 @@ html5
 icml
 ipynb
 jats
+jats_archiving
+jats_articleauthoring
+jats_publishing
 jira
 json
 latex
@@ -38,6 +45,7 @@ odt
 opendocument
 opml
 org
+pdf
 plain
 pptx
 revealjs

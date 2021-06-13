@@ -1,5 +1,10 @@
+biblatex
+bibtex
 commonmark
+commonmark_x
 creole
+csljson
+csv
 docbook
 docx
 dokuwiki
@@ -10,6 +15,7 @@ haddock
 html
 ipynb
 jats
+jira
 json
 latex
 man
