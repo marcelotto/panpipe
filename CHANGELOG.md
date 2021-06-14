@@ -5,9 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.2.0 - 2021-06-14
 
-- Upgrade to Pandoc API version 1.22
+This version upgrades to the latest Pandoc version 2.14 with API version 1.22.
 
 ### Added
 
@@ -17,7 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - Adapt to the completely redesigned AST structure for tables
 
-[Compare v0.1.1...HEAD](https://github.com/marcelotto/panpipe/compare/v0.1.1...HEAD)
+[Compare v0.1.1...v0.2.0](https://github.com/marcelotto/panpipe/compare/v0.1.1...v0.2.0)
 
 
 
