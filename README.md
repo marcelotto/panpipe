@@ -28,6 +28,19 @@ def deps do
 end
 ```
 
+Since Panpipe uses the [ProtocolEx](https://github.com/OvermindDL1/protocol_ex) library under the hood,
+you'll have to add its compiler in `mix.exs`:
+
+```elixir
+def project do
+  [
+    # ...
+    compilers: Mix.compilers ++ [:protocol_ex],
+    # ...
+  ]
+end
+```
+
 
 ## Usage
 
