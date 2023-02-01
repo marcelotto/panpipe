@@ -10,7 +10,7 @@ defmodule Panpipe.MixProject do
     [
       app: :panpipe,
       version: @version,
-      elixir: "~> 1.7",
+      elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
       compilers: Mix.compilers ++ [:protocol_ex],
       deps: deps(),
