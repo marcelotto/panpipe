@@ -1478,28 +1478,3 @@ defimpl_ex Panpipe.Pandoc.Span, %{"t" => "Span"}, for: Panpipe.Pandoc.AST.Node d
     }
   end
 end
-
-
-################################################################################
-# Null - Nothing
-
-defmodule Panpipe.AST.Null do
-  @moduledoc """
-  A `Panpipe.AST.Null` for nodes of the Pandoc AST with the type `Null`.
-
-  This type of node can be useful when you want to remove another node with
-  the `Panpipe.AST.transform/2` function.
-  """
-
-  use Panpipe.AST.Node, type: :block
-
-  def child_type(), do: :nil
-
-  def to_pandoc(%__MODULE__{}), do: %{"t" => "Null"}
-end
-
-defimpl_ex Panpipe.Pandoc.Null, %{"t" => "Null"}, for: Panpipe.Pandoc.AST.Node do
-  @moduledoc false
-
-  def to_panpipe(_), do: %Panpipe.AST.Null{}
-end
