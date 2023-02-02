@@ -23,6 +23,7 @@ cs
 css
 curry
 d
+dart
 default
 diff
 djangotemplate
@@ -86,12 +87,14 @@ monobasic
 mustache
 nasm
 nim
+nix
 noweb
 objectivec
 objectivecpp
 ocaml
 octave
 opencl
+orgmode
 pascal
 perl
 php
@@ -103,6 +106,7 @@ prolog
 protobuf
 pure
 purebasic
+purescript
 python
 qml
 r
@@ -114,9 +118,11 @@ rhtml
 roff
 ruby
 rust
+sass
 scala
 scheme
 sci
+scss
 sed
 sgml
 sml
@@ -124,7 +130,10 @@ spdxcomments
 sql
 sqlmysql
 sqlpostgresql
+stan
 stata
+swift
+systemverilog
 tcl
 tcsh
 texinfo

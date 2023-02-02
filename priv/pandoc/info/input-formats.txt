@@ -8,6 +8,7 @@ csv
 docbook
 docx
 dokuwiki
+endnotexml
 epub
 fb2
 gfm
@@ -30,9 +31,12 @@ native
 odt
 opml
 org
+ris
 rst
+rtf
 t2t
 textile
 tikiwiki
+tsv
 twiki
 vimwiki

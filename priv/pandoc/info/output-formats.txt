@@ -3,6 +3,7 @@ asciidoctor
 beamer
 biblatex
 bibtex
+chunkedhtml
 commonmark
 commonmark_x
 context
@@ -37,6 +38,7 @@ markdown_github
 markdown_mmd
 markdown_phpextra
 markdown_strict
+markua
 mediawiki
 ms
 muse
