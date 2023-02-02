@@ -198,7 +198,7 @@ defmodule Panpipe.Pandoc.ConversionTest do
 
   test "AST.Underline" do
     underline = %Panpipe.AST.Underline{children: %Panpipe.AST.Str{string: "Example"}}
-    assert Panpipe.Pandoc.Conversion.convert(underline, to: :markdown) == "[Example]{.ul}"
+    assert Panpipe.Pandoc.Conversion.convert(underline, to: :markdown) == "[Example]{.underline}"
     assert Panpipe.Pandoc.Conversion.convert(underline, to: :textile) == "+Example+"
     assert Panpipe.Pandoc.Conversion.convert(underline, to: :plain) == "Example"
   end
