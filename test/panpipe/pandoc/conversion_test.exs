@@ -305,4 +305,34 @@ defmodule Panpipe.Pandoc.ConversionTest do
     assert Panpipe.Pandoc.Conversion.convert(span, to: :markdown) == "Example"
     assert Panpipe.Pandoc.Conversion.convert(span, to: :plain) == "Example"
   end
+
+  test "AST.Figure" do
+    figure =
+      %Panpipe.AST.Figure{
+        caption: %Panpipe.AST.Caption{
+          blocks: [
+            %Panpipe.AST.Plain{
+              children: [
+                %Panpipe.AST.Str{string: "Example"},
+                %Panpipe.AST.Space{},
+                %Panpipe.AST.Str{string: "figure"},
+                %Panpipe.AST.Space{},
+                %Panpipe.AST.Str{string: "1"}
+              ]
+            }
+          ]
+        },
+        children: [
+          %Panpipe.AST.Para{children: [%Panpipe.AST.Str{string: "Foo"}]}
+        ]
+
+      }
+
+    assert Panpipe.Pandoc.Conversion.convert(figure, to: :markdown) == """
+           <figure>
+           <p>Foo</p>
+           <figcaption>Example figure 1</figcaption>
+           </figure>
+           """
+  end
 end

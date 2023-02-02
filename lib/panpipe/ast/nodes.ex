@@ -1478,3 +1478,47 @@ defimpl_ex Panpipe.Pandoc.Span, %{"t" => "Span"}, for: Panpipe.Pandoc.AST.Node d
     }
   end
 end
+
+
+################################################################################
+# Figure Attr Caption [Block] - Figure, with attributes, caption, and content (list of blocks)
+
+defmodule Panpipe.AST.Figure do
+  @moduledoc """
+  A `Panpipe.AST.Figure` for nodes of the Pandoc AST with the type `Figure`.
+  the `Panpipe.AST.transform/2` function.
+  """
+
+  use Panpipe.AST.Node, type: :block,
+                        fields: [
+                          caption: %Panpipe.AST.Caption{},
+                          attr: %Panpipe.AST.Attr{}
+                        ]
+
+
+  def child_type(), do: :block
+
+  def to_pandoc(%__MODULE__{} = figure) do
+    %{
+      "t" => "Figure",
+      "c" => [
+        Panpipe.AST.Attr.to_pandoc(figure.attr),
+        Panpipe.AST.Caption.to_pandoc(figure.caption),
+        Enum.map(figure.children, &Panpipe.AST.Node.to_pandoc/1),
+      ]
+    }
+  end
+
+end
+
+defimpl_ex Panpipe.Pandoc.Figure, %{"t" => "Figure"}, for: Panpipe.Pandoc.AST.Node do
+  @moduledoc false
+
+  def to_panpipe(%{"c" => [attr, caption, text]}) do
+    %Panpipe.AST.Figure{
+      caption: Panpipe.AST.Caption.from_pandoc(caption),
+      attr: Panpipe.AST.Attr.from_pandoc(attr),
+      children: text |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1)
+    }
+  end
+end
