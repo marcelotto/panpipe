@@ -8,9 +8,9 @@ An Elixir wrapper around [Pandoc].
 
 ## Features
 
-- convenvient ways to call the `pandoc` functions from Elixir
+- convenient ways to call the `pandoc` functions from Elixir
 - Elixir structs for the [Pandoc AST] - a read and writeable Markdown AST
-- ways to traverse and transform the AST
+- ways to traverse and transform the AST via Elixir pattern matching (and pipes maybe)
 - ... everything you need to write [Pandoc filters] with Elixir
 
 
@@ -134,7 +134,7 @@ see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## License and Copyright
 
-(c) 2019 Marcel Otto. MIT Licensed, see [LICENSE](LICENSE.md) for details.
+(c) 2019-present Marcel Otto. MIT Licensed, see [LICENSE](LICENSE.md) for details.
 
 
 [Pandoc]:           https://pandoc.org/
