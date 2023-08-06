@@ -754,7 +754,7 @@ defmodule Panpipe.AST.Table do
     table.caption.blocks ++
     Panpipe.AST.TableHead.children(table.table_head) ++
     Enum.flat_map(table.table_bodies, &Panpipe.AST.TableBody.children/1) ++
-    Panpipe.AST.TableHead.children(table.table_foot)
+    Panpipe.AST.TableFoot.children(table.table_foot)
   end
 
   def transform(%__MODULE__{} = table, fun) do

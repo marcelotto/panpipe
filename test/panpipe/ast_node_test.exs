@@ -59,6 +59,26 @@ defmodule Panpipe.AST.NodeTest do
             ]
   end
 
+  test "traverse over multiline table" do
+    assert {:ok, ast} = """
+           ---
+           # Foo
+
+           Bar
+
+           ---
+           # Baz
+
+           ...
+           """
+           |> Panpipe.ast(from: {:markdown, [:multiline_tables]})
+
+    for %{parent: %Panpipe.Document{}} = element <- ast do
+      %{element | parent: nil}
+    end
+
+  end
+
   describe "transform/2" do
     test "replace a node with another node" do
       assert {:ok, document} = Panpipe.ast "<http://example.com/foo>"

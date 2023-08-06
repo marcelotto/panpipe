@@ -17,6 +17,10 @@ This version upgrades to the latest Pandoc version 3.0 with API version 1.23.
 
 - Remove obsolete `Panpipe.AST.Null` AST node struct
 
+### Fixed
+
+- bug in AST traversal of tables
+
 
 [Compare v0.2.0...HEAD](https://github.com/marcelotto/panpipe/compare/v0.2.0...HEAD)
 
