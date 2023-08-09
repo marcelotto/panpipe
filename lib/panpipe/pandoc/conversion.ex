@@ -1,7 +1,7 @@
 defprotocol Panpipe.Pandoc.Conversion do
   @moduledoc !"""
-  A protocol for conversion of `Panpipe.AST.Node`s or strings to any format supported by Pandoc.
-  """
+             A protocol for conversion of `Panpipe.AST.Node`s or strings to any format supported by Pandoc.
+             """
 
   def convert(source, opts)
 end

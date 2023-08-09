@@ -11,9 +11,12 @@ end
 
 defmodule Panpipe.AST.Attr do
   defstruct [
-    identifier: "",       # :: String
-    classes: [],          # :: [String]
-    key_value_pairs: %{}  # :: [(String, String)]
+    # :: String
+    identifier: "",
+    # :: [String]
+    classes: [],
+    # :: [(String, String)]
+    key_value_pairs: %{}
   ]
 
   def new(), do: %__MODULE__{}
@@ -26,13 +29,18 @@ defmodule Panpipe.AST.Attr do
     %__MODULE__{attr | classes: List.wrap(attr.classes) ++ List.wrap(class)}
   end
 
-  def add_key_value_pairs(%__MODULE__{} = attr, key_value_pairs) when is_map(key_value_pairs)do
-    %__MODULE__{attr | key_value_pairs: Map.merge(attr.key_value_pairs,
-      Map.new(key_value_pairs, fn {key, value} -> {to_string(key), to_string(value)} end))
+  def add_key_value_pairs(%__MODULE__{} = attr, key_value_pairs) when is_map(key_value_pairs) do
+    %__MODULE__{
+      attr
+      | key_value_pairs:
+          Map.merge(
+            attr.key_value_pairs,
+            Map.new(key_value_pairs, fn {key, value} -> {to_string(key), to_string(value)} end)
+          )
     }
   end
 
-  def add_key_value_pairs(%__MODULE__{} = attr, key_value_pairs) when is_list(key_value_pairs)do
+  def add_key_value_pairs(%__MODULE__{} = attr, key_value_pairs) when is_list(key_value_pairs) do
     add_key_value_pairs(attr, Map.new(key_value_pairs))
   end
 
@@ -49,7 +57,7 @@ defmodule Panpipe.AST.Attr do
       attr.identifier,
       attr.classes,
       (attr.key_value_pairs || %{})
-      |> Enum.map(fn {key, value} -> [key, value] end),
+      |> Enum.map(fn {key, value} -> [key, value] end)
     ]
   end
 
@@ -86,7 +94,6 @@ defimpl_ex Panpipe.Pandoc.Plain, %{"t" => "Plain"}, for: Panpipe.Pandoc.AST.Node
   end
 end
 
-
 ################################################################################
 # Para [Inline] - Paragraph
 
@@ -112,11 +119,10 @@ defimpl_ex Panpipe.Pandoc.Para, %{"t" => "Para"}, for: Panpipe.Pandoc.AST.Node d
 
   def to_panpipe(%{"c" => children}) do
     %Panpipe.AST.Para{
-      children: children |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
+      children: children |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1)
     }
   end
 end
-
 
 ################################################################################
 # LineBlock [[Inline]] - Multiple non-breaking lines
@@ -135,9 +141,10 @@ defmodule Panpipe.AST.LineBlock do
   def to_pandoc(%__MODULE__{children: children}) do
     %{
       "t" => "LineBlock",
-      "c" => Enum.map(children, fn child ->
-               Enum.map(child, &Panpipe.AST.Node.to_pandoc/1)
-             end)
+      "c" =>
+        Enum.map(children, fn child ->
+          Enum.map(child, &Panpipe.AST.Node.to_pandoc/1)
+        end)
     }
   end
 end
@@ -147,13 +154,13 @@ defimpl_ex Panpipe.Pandoc.LineBlock, %{"t" => "LineBlock"}, for: Panpipe.Pandoc.
 
   def to_panpipe(%{"c" => children}) do
     %Panpipe.AST.LineBlock{
-      children: Enum.map(children, fn child ->
-                  Enum.map(child, &Panpipe.Pandoc.AST.Node.to_panpipe/1)
-                end)
+      children:
+        Enum.map(children, fn child ->
+          Enum.map(child, &Panpipe.Pandoc.AST.Node.to_panpipe/1)
+        end)
     }
   end
 end
-
 
 ################################################################################
 # CodeBlock Attr String - Code block (literal) with attributes
@@ -189,7 +196,6 @@ defimpl_ex Panpipe.Pandoc.CodeBlock, %{"t" => "CodeBlock"}, for: Panpipe.Pandoc.
   end
 end
 
-
 ################################################################################
 # RawBlock Format String - Raw block
 
@@ -218,7 +224,6 @@ defimpl_ex Panpipe.Pandoc.RawBlock, %{"t" => "RawBlock"}, for: Panpipe.Pandoc.AS
   end
 end
 
-
 ################################################################################
 # BlockQuote [Block] - Block quote (list of blocks)
 
@@ -244,11 +249,10 @@ defimpl_ex Panpipe.Pandoc.BlockQuote, %{"t" => "BlockQuote"}, for: Panpipe.Pando
 
   def to_panpipe(%{"c" => children}) do
     %Panpipe.AST.BlockQuote{
-      children: Enum.map(children, &Panpipe.Pandoc.AST.Node.to_panpipe/1),
+      children: Enum.map(children, &Panpipe.Pandoc.AST.Node.to_panpipe/1)
     }
   end
 end
-
 
 ################################################################################
 # Helper struct: ListElement
@@ -291,7 +295,6 @@ defmodule Panpipe.AST.ListAttributes do
   """
   def styles(), do: @styles
 
-
   # The various delimiters of list numbers
   @delimiters [
     "DefaultDelim",
@@ -305,7 +308,6 @@ defmodule Panpipe.AST.ListAttributes do
   """
   def delimiters(), do: @delimiters
 
-
   def from_pandoc([start, %{"t" => number_style}, %{"t" => number_delimiter}]) do
     %__MODULE__{
       start: start,
@@ -314,11 +316,14 @@ defmodule Panpipe.AST.ListAttributes do
     }
   end
 
-  def to_pandoc(%__MODULE__{start: start, number_style: number_style, number_delimiter: number_delimiter}) do
+  def to_pandoc(%__MODULE__{
+        start: start,
+        number_style: number_style,
+        number_delimiter: number_delimiter
+      }) do
     [start, %{"t" => number_style}, %{"t" => number_delimiter}]
   end
 end
-
 
 ################################################################################
 # OrderedList ListAttributes [[Block]] - Ordered list (attributes and a list of items, each a list of blocks)
@@ -333,7 +338,8 @@ defmodule Panpipe.AST.OrderedList do
 
   use Panpipe.AST.Node, type: :block, fields: [:list_attributes]
 
-  def child_type(), do: :block # or ListElement?
+  # or ListElement?
+  def child_type(), do: :block
 
   def to_pandoc(%__MODULE__{list_attributes: list_attributes, children: children}) do
     %{
@@ -357,7 +363,6 @@ defimpl_ex Panpipe.Pandoc.OrderedList, %{"t" => "OrderedList"}, for: Panpipe.Pan
   end
 end
 
-
 ################################################################################
 # BulletList [[Block]] - Bullet list (list of items, each a list of blocks)
 
@@ -370,7 +375,8 @@ defmodule Panpipe.AST.BulletList do
 
   use Panpipe.AST.Node, type: :block
 
-  def child_type(), do: :block # or ListElement?
+  # or ListElement?
+  def child_type(), do: :block
 
   def to_pandoc(%__MODULE__{children: children}) do
     %{
@@ -390,7 +396,6 @@ defimpl_ex Panpipe.Pandoc.BulletList, %{"t" => "BulletList"}, for: Panpipe.Pando
   end
 end
 
-
 ################################################################################
 # DefinitionList [([Inline], [[Block]])] - Definition list Each list item is a pair consisting of a term (a list of inlines) and one or more definitions (each a list of blocks)
 
@@ -401,21 +406,23 @@ defmodule Panpipe.AST.DefinitionList do
 
   use Panpipe.AST.Node, type: :block
 
-  def child_type(), do: :block # or :definition_tuple
+  # or :definition_tuple
+  def child_type(), do: :block
 
   # TODO: test in traversal tests, if we need to flatten the children
 
   def to_pandoc(%__MODULE__{children: children}) do
     %{
       "t" => "DefinitionList",
-      "c" => Enum.map(children, fn [term, definition] ->
-        [
-          Enum.map(term, &Panpipe.AST.Node.to_pandoc/1),
-          Enum.map(definition, fn block ->
-            Enum.map(block, &Panpipe.AST.Node.to_pandoc/1)
-          end)
-        ]
-      end)
+      "c" =>
+        Enum.map(children, fn [term, definition] ->
+          [
+            Enum.map(term, &Panpipe.AST.Node.to_pandoc/1),
+            Enum.map(definition, fn block ->
+              Enum.map(block, &Panpipe.AST.Node.to_pandoc/1)
+            end)
+          ]
+        end)
     }
   end
 end
@@ -425,18 +432,18 @@ defimpl_ex Panpipe.Pandoc.DefinitionList, %{"t" => "DefinitionList"}, for: Panpi
 
   def to_panpipe(%{"c" => definitions}) do
     %Panpipe.AST.DefinitionList{
-      children: Enum.map(definitions, fn [term, definition] ->
-        [
-          Enum.map(term, &Panpipe.Pandoc.AST.Node.to_panpipe/1),
-          Enum.map(definition, fn block ->
-            Enum.map(block, &Panpipe.Pandoc.AST.Node.to_panpipe/1)
-          end)
-        ]
-      end)
+      children:
+        Enum.map(definitions, fn [term, definition] ->
+          [
+            Enum.map(term, &Panpipe.Pandoc.AST.Node.to_panpipe/1),
+            Enum.map(definition, fn block ->
+              Enum.map(block, &Panpipe.Pandoc.AST.Node.to_panpipe/1)
+            end)
+          ]
+        end)
     }
   end
 end
-
 
 ################################################################################
 # Header Int Attr [Inline] - Header - level (integer) and text (inlines)
@@ -453,7 +460,11 @@ defmodule Panpipe.AST.Header do
   def to_pandoc(%__MODULE__{level: level, children: children, attr: attr}) do
     %{
       "t" => "Header",
-      "c" => [level, Panpipe.AST.Attr.to_pandoc(attr), Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)]
+      "c" => [
+        level,
+        Panpipe.AST.Attr.to_pandoc(attr),
+        Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)
+      ]
     }
   end
 end
@@ -469,7 +480,6 @@ defimpl_ex Panpipe.Pandoc.Header, %{"t" => "Header"}, for: Panpipe.Pandoc.AST.No
     }
   end
 end
-
 
 ################################################################################
 # HorizontalRule - Horizontal rule
@@ -492,7 +502,6 @@ defimpl_ex Panpipe.Pandoc.HorizontalRule, %{"t" => "HorizontalRule"}, for: Panpi
   def to_panpipe(_), do: %Panpipe.AST.HorizontalRule{}
 end
 
-
 ################################################################################
 # Helper struct: Caption
 
@@ -514,8 +523,10 @@ defmodule Panpipe.AST.Caption do
   end
 
   def transform(%__MODULE__{} = caption, table, fun) do
-    %__MODULE__{caption |
-      blocks: Panpipe.AST.Node.do_transform_children(caption.blocks, %{caption | parent: table}, fun)
+    %__MODULE__{
+      caption
+      | blocks:
+          Panpipe.AST.Node.do_transform_children(caption.blocks, %{caption | parent: table}, fun)
     }
   end
 end
@@ -531,7 +542,7 @@ defmodule Panpipe.AST.ColSpec do
     "AlignLeft",
     "AlignRight",
     "AlignCenter",
-    "AlignDefault",
+    "AlignDefault"
   ]
 
   @doc """
@@ -570,15 +581,20 @@ defmodule Panpipe.AST.TableHead do
   def to_pandoc(%__MODULE__{attr: attr, rows: rows}) do
     [
       Panpipe.AST.Attr.to_pandoc(attr),
-      Enum.map(rows, &Panpipe.AST.Row.to_pandoc/1),
+      Enum.map(rows, &Panpipe.AST.Row.to_pandoc/1)
     ]
   end
 
   def children(%__MODULE__{rows: rows}), do: Enum.flat_map(rows, &Panpipe.AST.Row.children/1)
 
   def transform(%__MODULE__{} = table_head, table, fun) do
-    %__MODULE__{table_head |
-      rows: Enum.map(table_head.rows, &(Panpipe.AST.Row.transform(&1, %{table_head | parent: table}, fun)))
+    %__MODULE__{
+      table_head
+      | rows:
+          Enum.map(
+            table_head.rows,
+            &Panpipe.AST.Row.transform(&1, %{table_head | parent: table}, fun)
+          )
     }
   end
 end
@@ -599,15 +615,20 @@ defmodule Panpipe.AST.TableFoot do
   def to_pandoc(%__MODULE__{attr: attr, rows: rows}) do
     [
       Panpipe.AST.Attr.to_pandoc(attr),
-      Enum.map(rows, &Panpipe.AST.Row.to_pandoc/1),
+      Enum.map(rows, &Panpipe.AST.Row.to_pandoc/1)
     ]
   end
 
   def children(%__MODULE__{rows: rows}), do: Enum.flat_map(rows, &Panpipe.AST.Row.children/1)
 
   def transform(%__MODULE__{} = table_foot, table, fun) do
-    %__MODULE__{table_foot |
-      rows: Enum.map(table_foot.rows, &(Panpipe.AST.Row.transform(&1, %{table_foot | parent: table}, fun)))
+    %__MODULE__{
+      table_foot
+      | rows:
+          Enum.map(
+            table_foot.rows,
+            &Panpipe.AST.Row.transform(&1, %{table_foot | parent: table}, fun)
+          )
     }
   end
 end
@@ -636,25 +657,33 @@ defmodule Panpipe.AST.TableBody do
       Panpipe.AST.Attr.to_pandoc(table_body.attr),
       table_body.row_head_columns,
       Enum.map(table_body.intermediate_head_rows, &Panpipe.AST.Row.to_pandoc/1),
-      Enum.map(table_body.intermediate_body_rows, &Panpipe.AST.Row.to_pandoc/1),
+      Enum.map(table_body.intermediate_body_rows, &Panpipe.AST.Row.to_pandoc/1)
     ]
   end
 
   def children(%__MODULE__{
-    intermediate_head_rows: intermediate_head_rows,
-    intermediate_body_rows: intermediate_body_rows
-  }) do
+        intermediate_head_rows: intermediate_head_rows,
+        intermediate_body_rows: intermediate_body_rows
+      }) do
     Enum.flat_map(intermediate_head_rows, &Panpipe.AST.Row.children/1) ++
       Enum.flat_map(intermediate_body_rows, &Panpipe.AST.Row.children/1)
   end
 
   def transform(%__MODULE__{} = table_foot, table, fun) do
-    table_foot_with_parent =%{table_foot | parent: table}
-    %__MODULE__{table_foot |
-      intermediate_head_rows:
-        Enum.map(table_foot.intermediate_head_rows, &(Panpipe.AST.Row.transform(&1, table_foot_with_parent, fun))),
-      intermediate_body_rows:
-        Enum.map(table_foot.intermediate_body_rows, &(Panpipe.AST.Row.transform(&1, table_foot_with_parent, fun)))
+    table_foot_with_parent = %{table_foot | parent: table}
+
+    %__MODULE__{
+      table_foot
+      | intermediate_head_rows:
+          Enum.map(
+            table_foot.intermediate_head_rows,
+            &Panpipe.AST.Row.transform(&1, table_foot_with_parent, fun)
+          ),
+        intermediate_body_rows:
+          Enum.map(
+            table_foot.intermediate_body_rows,
+            &Panpipe.AST.Row.transform(&1, table_foot_with_parent, fun)
+          )
     }
   end
 end
@@ -675,15 +704,16 @@ defmodule Panpipe.AST.Row do
   def to_pandoc(%__MODULE__{attr: attr, cells: cells}) do
     [
       Panpipe.AST.Attr.to_pandoc(attr),
-      Enum.map(cells, &Panpipe.AST.Cell.to_pandoc/1),
+      Enum.map(cells, &Panpipe.AST.Cell.to_pandoc/1)
     ]
   end
 
   def children(%__MODULE__{cells: cells}), do: Enum.flat_map(cells, &Panpipe.AST.Cell.children/1)
 
   def transform(%__MODULE__{} = row, parent, fun) do
-    %__MODULE__{row |
-      cells: Enum.map(row.cells, &(Panpipe.AST.Cell.transform(&1, %{row | parent: parent}, fun)))
+    %__MODULE__{
+      row
+      | cells: Enum.map(row.cells, &Panpipe.AST.Cell.transform(&1, %{row | parent: parent}, fun))
     }
   end
 end
@@ -722,8 +752,9 @@ defmodule Panpipe.AST.Cell do
   def children(%__MODULE__{blocks: blocks}), do: blocks
 
   def transform(%__MODULE__{} = cell, parent, fun) do
-    %__MODULE__{cell |
-      blocks: Panpipe.AST.Node.do_transform_children(cell.blocks, %{cell | parent: parent}, fun)
+    %__MODULE__{
+      cell
+      | blocks: Panpipe.AST.Node.do_transform_children(cell.blocks, %{cell | parent: parent}, fun)
     }
   end
 end
@@ -736,33 +767,37 @@ defmodule Panpipe.AST.Table do
   A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Table`.
   """
 
-  use Panpipe.AST.Node, type: :block,
-                        fields: [
-                          :col_spec,
-                          table_head: %Panpipe.AST.TableHead{},
-                          table_bodies: [],
-                          table_foot: %Panpipe.AST.TableFoot{},
-                          caption: %Panpipe.AST.Caption{},
-                          attr: %Panpipe.AST.Attr{}
-                        ]
+  use Panpipe.AST.Node,
+    type: :block,
+    fields: [
+      :col_spec,
+      table_head: %Panpipe.AST.TableHead{},
+      table_bodies: [],
+      table_foot: %Panpipe.AST.TableFoot{},
+      caption: %Panpipe.AST.Caption{},
+      attr: %Panpipe.AST.Attr{}
+    ]
 
-  def child_type(), do: :inline # or cells?
+  # or cells?
+  def child_type(), do: :inline
 
   def children(%__MODULE__{} = table) do
     # TODO: test in traversal tests, if we need to flatten the children
     # TODO #167558619: During traversal, it would be good if some context information would be available, like if a link was part of the table caption or a table cell etc.
     table.caption.blocks ++
-    Panpipe.AST.TableHead.children(table.table_head) ++
-    Enum.flat_map(table.table_bodies, &Panpipe.AST.TableBody.children/1) ++
-    Panpipe.AST.TableFoot.children(table.table_foot)
+      Panpipe.AST.TableHead.children(table.table_head) ++
+      Enum.flat_map(table.table_bodies, &Panpipe.AST.TableBody.children/1) ++
+      Panpipe.AST.TableFoot.children(table.table_foot)
   end
 
   def transform(%__MODULE__{} = table, fun) do
-    %{table |
-      caption: Panpipe.AST.Caption.transform(table.caption, table, fun),
-      table_head: Panpipe.AST.TableHead.transform(table.table_head, table, fun),
-      table_bodies: Enum.map(table.table_bodies, &Panpipe.AST.TableBody.transform(&1, table, fun)),
-      table_foot: Panpipe.AST.TableFoot.transform(table.table_foot, table, fun)
+    %{
+      table
+      | caption: Panpipe.AST.Caption.transform(table.caption, table, fun),
+        table_head: Panpipe.AST.TableHead.transform(table.table_head, table, fun),
+        table_bodies:
+          Enum.map(table.table_bodies, &Panpipe.AST.TableBody.transform(&1, table, fun)),
+        table_foot: Panpipe.AST.TableFoot.transform(table.table_foot, table, fun)
     }
   end
 
@@ -796,7 +831,6 @@ defimpl_ex Panpipe.Pandoc.Table, %{"t" => "Table"}, for: Panpipe.Pandoc.AST.Node
   end
 end
 
-
 ################################################################################
 # Div Attr [Block] - Generic block container with attributes
 
@@ -814,7 +848,7 @@ defmodule Panpipe.AST.Div do
       "t" => "Div",
       "c" => [
         Panpipe.AST.Attr.to_pandoc(attr),
-        Enum.map(children, &Panpipe.AST.Node.to_pandoc/1),
+        Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)
       ]
     }
   end
@@ -830,7 +864,6 @@ defimpl_ex Panpipe.Pandoc.Div, %{"t" => "Div"}, for: Panpipe.Pandoc.AST.Node do
     }
   end
 end
-
 
 ################################################################################
 # Str String - Text (string)
@@ -852,7 +885,6 @@ defimpl_ex Panpipe.Pandoc.Str, %{"t" => "Str"}, for: Panpipe.Pandoc.AST.Node do
 
   def to_panpipe(%{"c" => str}), do: %Panpipe.AST.Str{string: str}
 end
-
 
 ################################################################################
 # Emph [Inline] - Emphasized text (list of inlines)
@@ -879,7 +911,6 @@ defimpl_ex Panpipe.Pandoc.Emph, %{"t" => "Emph"}, for: Panpipe.Pandoc.AST.Node d
   end
 end
 
-
 ################################################################################
 # Underling [Inline] - Underlined text (list of inlines)
 
@@ -904,7 +935,6 @@ defimpl_ex Panpipe.Pandoc.Underline, %{"t" => "Underline"}, for: Panpipe.Pandoc.
     %Panpipe.AST.Underline{children: Enum.map(children, &Panpipe.Pandoc.AST.Node.to_panpipe/1)}
   end
 end
-
 
 ################################################################################
 # Strong [Inline] - Strongly emphasized text (list of inlines)
@@ -931,7 +961,6 @@ defimpl_ex Panpipe.Pandoc.Strong, %{"t" => "Strong"}, for: Panpipe.Pandoc.AST.No
   end
 end
 
-
 ################################################################################
 # Strikeout [Inline] - Strikeout text (list of inlines)
 
@@ -956,7 +985,6 @@ defimpl_ex Panpipe.Pandoc.Strikeout, %{"t" => "Strikeout"}, for: Panpipe.Pandoc.
     %Panpipe.AST.Strikeout{children: Enum.map(children, &Panpipe.Pandoc.AST.Node.to_panpipe/1)}
   end
 end
-
 
 ################################################################################
 # Superscript [Inline] - Superscripted text (list of inlines)
@@ -983,7 +1011,6 @@ defimpl_ex Panpipe.Pandoc.Superscript, %{"t" => "Superscript"}, for: Panpipe.Pan
   end
 end
 
-
 ################################################################################
 # Subscript [Inline] - Subscripted text (list of inlines)
 
@@ -1008,7 +1035,6 @@ defimpl_ex Panpipe.Pandoc.Subscript, %{"t" => "Subscript"}, for: Panpipe.Pandoc.
     %Panpipe.AST.Subscript{children: Enum.map(children, &Panpipe.Pandoc.AST.Node.to_panpipe/1)}
   end
 end
-
 
 ################################################################################
 # SmallCaps [Inline] - Small caps text (list of inlines)
@@ -1035,7 +1061,6 @@ defimpl_ex Panpipe.Pandoc.SmallCaps, %{"t" => "SmallCaps"}, for: Panpipe.Pandoc.
   end
 end
 
-
 ################################################################################
 # Quoted QuoteType [Inline] - Quoted text (list of inlines)
 
@@ -1048,14 +1073,13 @@ defmodule Panpipe.AST.Quoted do
 
   @quote_types [
     "SingleQuote",
-    "DoubleQuote",
+    "DoubleQuote"
   ]
 
   @doc """
   The possible values for the `type` field.
   """
   def quote_types(), do: @quote_types
-
 
   def child_type(), do: :inline
 
@@ -1076,11 +1100,10 @@ defimpl_ex Panpipe.Pandoc.Quoted, %{"t" => "Quoted"}, for: Panpipe.Pandoc.AST.No
   def to_panpipe(%{"c" => [%{"t" => quote_type}, children]}) do
     %Panpipe.AST.Quoted{
       children: Enum.map(children, &Panpipe.Pandoc.AST.Node.to_panpipe/1),
-      type: quote_type,
+      type: quote_type
     }
   end
 end
-
 
 ################################################################################
 # Cite [Citation] [Inline] - Citation (list of inlines)
@@ -1113,25 +1136,30 @@ defimpl_ex Panpipe.Pandoc.Cite, %{"t" => "Cite"}, for: Panpipe.Pandoc.AST.Node d
   def to_panpipe(%{"c" => [citations, children]}) do
     %Panpipe.AST.Cite{
       children: children |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
-      citations: citations |> Enum.map(&Panpipe.AST.Cite.Citation.from_pandoc/1),
+      citations: citations |> Enum.map(&Panpipe.AST.Cite.Citation.from_pandoc/1)
     }
   end
 end
 
 defmodule Panpipe.AST.Cite.Citation do
   defstruct [
-    :id,       # String
-    :prefix,   # [Inline]
-    :suffix,   # [Inline]
-    :mode,     # CitationMode
-    :note_num, # Int
-    :hash,
+    # String
+    :id,
+    # [Inline]
+    :prefix,
+    # [Inline]
+    :suffix,
+    # CitationMode
+    :mode,
+    # Int
+    :note_num,
+    :hash
   ]
 
   @modes [
     "AuthorInText",
     "SuppressAuthor",
-    "NormalCitation",
+    "NormalCitation"
   ]
 
   @doc """
@@ -1139,14 +1167,15 @@ defmodule Panpipe.AST.Cite.Citation do
   """
   def modes(), do: @modes
 
-
   def from_pandoc(%{
         "citationHash" => hash,
         "citationId" => id,
         "citationMode" => %{"t" => mode},
         "citationNoteNum" => note_num,
-        "citationPrefix" => prefix, # TODO: this is an inline - Should we consider this in the traversal, i.e. add it to the cite.children?
-        "citationSuffix" => suffix  # TODO: this is an inline - Should we consider this in the traversal, i.e. add it to the cite.children?
+        # TODO: this is an inline - Should we consider this in the traversal, i.e. add it to the cite.children?
+        "citationPrefix" => prefix,
+        # TODO: this is an inline - Should we consider this in the traversal, i.e. add it to the cite.children?
+        "citationSuffix" => suffix
       }) do
     %__MODULE__{
       id: id,
@@ -1154,7 +1183,7 @@ defmodule Panpipe.AST.Cite.Citation do
       suffix: suffix |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
       mode: mode,
       note_num: note_num,
-      hash: hash,
+      hash: hash
     }
   end
 
@@ -1169,7 +1198,6 @@ defmodule Panpipe.AST.Cite.Citation do
     }
   end
 end
-
 
 ################################################################################
 # Code Attr String - Inline code (literal)
@@ -1205,7 +1233,6 @@ defimpl_ex Panpipe.Pandoc.Code, %{"t" => "Code"}, for: Panpipe.Pandoc.AST.Node d
   end
 end
 
-
 ################################################################################
 # Space - Inter-word space
 
@@ -1226,7 +1253,6 @@ defimpl_ex Panpipe.Pandoc.Space, %{"t" => "Space"}, for: Panpipe.Pandoc.AST.Node
 
   def to_panpipe(_), do: %Panpipe.AST.Space{}
 end
-
 
 ################################################################################
 # SoftBreak - Soft line break
@@ -1249,7 +1275,6 @@ defimpl_ex Panpipe.Pandoc.SoftBreak, %{"t" => "SoftBreak"}, for: Panpipe.Pandoc.
   def to_panpipe(_), do: %Panpipe.AST.SoftBreak{}
 end
 
-
 ################################################################################
 # LineBreak - Hard line break
 
@@ -1271,7 +1296,6 @@ defimpl_ex Panpipe.Pandoc.LineBreak, %{"t" => "LineBreak"}, for: Panpipe.Pandoc.
   def to_panpipe(_), do: %Panpipe.AST.LineBreak{}
 end
 
-
 ################################################################################
 # Math MathType String - TeX math (literal)
 
@@ -1286,7 +1310,7 @@ defmodule Panpipe.AST.Math do
   # Types of math elements
   @math_types [
     "InlineMath",
-    "DisplayMath",
+    "DisplayMath"
   ]
 
   @doc """
@@ -1294,7 +1318,6 @@ defmodule Panpipe.AST.Math do
   """
   def math_types(), do: @math_types
 
-  
   def child_type(), do: nil
 
   def to_pandoc(%__MODULE__{type: math_type, string: string}) do
@@ -1312,7 +1335,6 @@ defimpl_ex Panpipe.Pandoc.Math, %{"t" => "Math"}, for: Panpipe.Pandoc.AST.Node d
     }
   end
 end
-
 
 ################################################################################
 # RawInline Format String - Raw inline
@@ -1342,7 +1364,6 @@ defimpl_ex Panpipe.Pandoc.RawInline, %{"t" => "RawInline"}, for: Panpipe.Pandoc.
   end
 end
 
-
 ################################################################################
 # Link Attr [Inline] Target - Hyperlink: alt text (list of inlines), target
 
@@ -1351,7 +1372,9 @@ defmodule Panpipe.AST.Link do
   A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Link`.
   """
 
-  use Panpipe.AST.Node, type: :inline, fields: [:children, :target, title: "", attr: %Panpipe.AST.Attr{}]
+  use Panpipe.AST.Node,
+    type: :inline,
+    fields: [:children, :target, title: "", attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :inline
 
@@ -1380,7 +1403,6 @@ defimpl_ex Panpipe.Pandoc.Link, %{"t" => "Link"}, for: Panpipe.Pandoc.AST.Node d
   end
 end
 
-
 ################################################################################
 # Image Attr [Inline] Target - Image: alt text (list of inlines), target
 
@@ -1389,7 +1411,9 @@ defmodule Panpipe.AST.Image do
   A `Panpipe.AST.Node` for nodes of the Pandoc AST with the type `Image`.
   """
 
-  use Panpipe.AST.Node, type: :inline, fields: [:children, :target, title: "", attr: %Panpipe.AST.Attr{}]
+  use Panpipe.AST.Node,
+    type: :inline,
+    fields: [:children, :target, title: "", attr: %Panpipe.AST.Attr{}]
 
   def child_type(), do: :inline
 
@@ -1418,7 +1442,6 @@ defimpl_ex Panpipe.Pandoc.Image, %{"t" => "Image"}, for: Panpipe.Pandoc.AST.Node
   end
 end
 
-
 ################################################################################
 # Note [Block] - Footnote or endnote
 
@@ -1444,7 +1467,6 @@ defimpl_ex Panpipe.Pandoc.Note, %{"t" => "Note"}, for: Panpipe.Pandoc.AST.Node d
   end
 end
 
-
 ################################################################################
 # Span Attr [Inline] - Generic inline container with attributes
 
@@ -1462,7 +1484,7 @@ defmodule Panpipe.AST.Span do
       "t" => "Span",
       "c" => [
         Panpipe.AST.Attr.to_pandoc(attr),
-        Enum.map(children, &Panpipe.AST.Node.to_pandoc/1),
+        Enum.map(children, &Panpipe.AST.Node.to_pandoc/1)
       ]
     }
   end
@@ -1479,7 +1501,6 @@ defimpl_ex Panpipe.Pandoc.Span, %{"t" => "Span"}, for: Panpipe.Pandoc.AST.Node d
   end
 end
 
-
 ################################################################################
 # Figure Attr Caption [Block] - Figure, with attributes, caption, and content (list of blocks)
 
@@ -1489,12 +1510,12 @@ defmodule Panpipe.AST.Figure do
   the `Panpipe.AST.transform/2` function.
   """
 
-  use Panpipe.AST.Node, type: :block,
-                        fields: [
-                          caption: %Panpipe.AST.Caption{},
-                          attr: %Panpipe.AST.Attr{}
-                        ]
-
+  use Panpipe.AST.Node,
+    type: :block,
+    fields: [
+      caption: %Panpipe.AST.Caption{},
+      attr: %Panpipe.AST.Attr{}
+    ]
 
   def child_type(), do: :block
 
@@ -1504,11 +1525,10 @@ defmodule Panpipe.AST.Figure do
       "c" => [
         Panpipe.AST.Attr.to_pandoc(figure.attr),
         Panpipe.AST.Caption.to_pandoc(figure.caption),
-        Enum.map(figure.children, &Panpipe.AST.Node.to_pandoc/1),
+        Enum.map(figure.children, &Panpipe.AST.Node.to_pandoc/1)
       ]
     }
   end
-
 end
 
 defimpl_ex Panpipe.Pandoc.Figure, %{"t" => "Figure"}, for: Panpipe.Pandoc.AST.Node do

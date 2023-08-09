@@ -21,16 +21,16 @@ defmodule Panpipe.Pandoc do
   @doc """
   The version of the Pandoc runtime Panpipe is using.
   """
-  def version, do: extract_from_version_string ~R/pandoc (\d+\.\d+.*)/
+  def version, do: extract_from_version_string(~R/pandoc (\d+\.\d+.*)/)
 
   @doc """
   The data directory of the Pandoc runtime Panpipe is using.
   """
-  def data_dir, do: extract_from_version_string ~R/Default user data directory: (.+)/
+  def data_dir, do: extract_from_version_string(~R/Default user data directory: (.+)/)
 
   defp extract_from_version_string(regex) do
     with {:ok, version_string} <- call(version: true),
-         [_, match]            <- Regex.run(regex, version_string) do
+         [_, match] <- Regex.run(regex, version_string) do
       match
     else
       _ -> nil
@@ -38,11 +38,11 @@ defmodule Panpipe.Pandoc do
   end
 
   @info_path "priv/pandoc/info"
-  @input_formats_file       Path.join(@info_path, "input-formats.txt")
-  @output_formats_file      Path.join(@info_path, "output-formats.txt")
-  @extensions_file          Path.join(@info_path, "extensions.txt")
+  @input_formats_file Path.join(@info_path, "input-formats.txt")
+  @output_formats_file Path.join(@info_path, "output-formats.txt")
+  @extensions_file Path.join(@info_path, "extensions.txt")
   @highlight_languages_file Path.join(@info_path, "highlight-languages.txt")
-  @highlight_styles_file    Path.join(@info_path, "highlight-styles.txt")
+  @highlight_styles_file Path.join(@info_path, "highlight-styles.txt")
 
   @doc false
   def input_formats_file, do: @input_formats_file
@@ -61,11 +61,11 @@ defmodule Panpipe.Pandoc do
   @external_resource @highlight_languages_file
   @external_resource @highlight_styles_file
 
-  @input_formats       Panpipe.Pandoc.Info.read(@input_formats_file)
-  @output_formats      Panpipe.Pandoc.Info.read(@output_formats_file)
+  @input_formats Panpipe.Pandoc.Info.read(@input_formats_file)
+  @output_formats Panpipe.Pandoc.Info.read(@output_formats_file)
   @highlight_languages Panpipe.Pandoc.Info.read(@highlight_languages_file)
-  @highlight_styles    Panpipe.Pandoc.Info.read(@highlight_styles_file)
-  @extensions          Panpipe.Pandoc.Info.read_without_flag(@extensions_file)
+  @highlight_styles Panpipe.Pandoc.Info.read(@highlight_styles_file)
+  @extensions Panpipe.Pandoc.Info.read_without_flag(@extensions_file)
 
   @doc """
   The list of input formats supported by Pandoc.
@@ -91,7 +91,6 @@ defmodule Panpipe.Pandoc do
   The list of available Pandoc extension.
   """
   def extensions(), do: @extensions
-
 
   @doc """
   Calls the `pandoc` command.
@@ -128,6 +127,7 @@ defmodule Panpipe.Pandoc do
   """
   def call(input_or_opts, opts \\ nil) do
     opts = normalize_opts(input_or_opts, opts)
+
     with {:ok, %Rambo{status: 0} = result} <- exec(opts) do
       {:ok, output(result, opts)}
     else
@@ -178,7 +178,7 @@ defmodule Panpipe.Pandoc do
 
   defp output(result, opts) do
     case Keyword.get(opts, :output) do
-      nil   -> result.out
+      nil -> result.out
       _file -> nil
     end
   end
@@ -193,7 +193,7 @@ defmodule Panpipe.Pandoc do
 
   defp panpipe_option?({opt, _}), do: opt in @panpipe_options
 
-  defp build_opt({opt, true}),  do: "#{build_opt(opt)}"
+  defp build_opt({opt, true}), do: "#{build_opt(opt)}"
   defp build_opt({opt, value}), do: "#{build_opt(opt)}=#{to_string(value)}"
 
   defp build_opt(opt) when is_atom(opt),
@@ -213,21 +213,21 @@ defmodule Panpipe.Pandoc do
 
   defp format_extensions({format, %{} = extensions}) do
     to_string(format) <>
-    extension_seq(extensions[:enable], "+") <>
-    extension_seq(extensions[:disable], "-")
+      extension_seq(extensions[:enable], "+") <>
+      extension_seq(extensions[:disable], "-")
   end
 
   defp format_extensions(_), do: nil
 
   defp extension_seq([], _), do: ""
   defp extension_seq(nil, _), do: ""
+
   defp extension_seq(extensions, prefix) do
-    prefix <> (
-      extensions
-      |> Enum.map(&to_string/1)
-      |> Enum.intersperse(prefix)
-      |> Enum.join()
-    )
+    prefix <>
+      (extensions
+       |> Enum.map(&to_string/1)
+       |> Enum.intersperse(prefix)
+       |> Enum.join())
   end
 
   @doc """
@@ -235,6 +235,7 @@ defmodule Panpipe.Pandoc do
   """
   def ast(input_or_opts, opts \\ nil) do
     opts = normalize_opts(input_or_opts, opts)
+
     with {:ok, json} <- opts |> Keyword.put(:to, "json") |> call() do
       Jason.decode(json)
     end

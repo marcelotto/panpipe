@@ -10,6 +10,7 @@ defmodule Panpipe.PandocTest do
     test "enabling extensions" do
       assert Pandoc.call(":smile:", from: {:markdown, [:emoji]}, to: :markdown) ==
                {:ok, "😄\n"}
+
       assert Pandoc.call(":smile:", from: {:markdown, %{enable: [:emoji]}}, to: :markdown) ==
                {:ok, "😄\n"}
     end

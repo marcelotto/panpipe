@@ -10,12 +10,10 @@ defmodule Panpipe do
 
   alias Panpipe.Pandoc
 
-
-  defdelegate pandoc(input_or_opts, opts \\ nil),  to: Pandoc, as: :call
+  defdelegate pandoc(input_or_opts, opts \\ nil), to: Pandoc, as: :call
   defdelegate pandoc!(input_or_opts, opts \\ nil), to: Pandoc, as: :call!
 
   defdelegate transform(node, fun), to: Panpipe.AST.Node
-
 
   @doc """
   Creates the Panpipe AST representation of some input.
@@ -42,7 +40,6 @@ defmodule Panpipe do
     end
   end
 
-
   @doc """
   Creates an `Panpipe.AST.Node` of some input without the surrounding `Document` structure.
   """
@@ -58,7 +55,8 @@ defmodule Panpipe do
         %Panpipe.Document{children: children} when is_list(children) ->
           {:ok, %Panpipe.AST.Plain{children: children}}
 
-        _ -> {:error, "unable to extract ast_fragment from #{inspect pandoc_ast}"}
+        _ ->
+          {:error, "unable to extract ast_fragment from #{inspect(pandoc_ast)}"}
       end
     end
   end
@@ -74,8 +72,7 @@ defmodule Panpipe do
     end
   end
 
-
-  Enum.each Panpipe.Pandoc.output_formats, fn output_format ->
+  Enum.each(Panpipe.Pandoc.output_formats(), fn output_format ->
     @doc """
     Calls `pandoc/1` with the option `to: :#{to_string(output_format)}` automatically set.
 
@@ -93,8 +90,10 @@ defmodule Panpipe do
     first manually or use `pandoc/1` directly.
     """
     def unquote(String.to_atom("to_" <> to_string(output_format)))(input, opts \\ []) do
-      Panpipe.Pandoc.Conversion.convert(input,
-        Keyword.put(opts, :to, unquote(output_format)))
+      Panpipe.Pandoc.Conversion.convert(
+        input,
+        Keyword.put(opts, :to, unquote(output_format))
+      )
     end
-  end
+  end)
 end

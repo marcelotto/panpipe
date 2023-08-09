@@ -3,8 +3,7 @@ defmodule Panpipe.MixProject do
 
   @repo_url "https://github.com/marcelotto/panpipe"
 
-  @version File.read!("VERSION") |> String.trim
-
+  @version File.read!("VERSION") |> String.trim()
 
   def project do
     [
@@ -24,7 +23,7 @@ defmodule Panpipe.MixProject do
       docs: [
         source_url: @repo_url,
         source_ref: "v#{@version}",
-        extras: ["CHANGELOG.md"],
+        extras: ["CHANGELOG.md"]
       ]
     ]
   end
@@ -41,7 +40,7 @@ defmodule Panpipe.MixProject do
       licenses: ["MIT"],
       links: %{
         "GitHub" => @repo_url,
-        "Changelog" => @repo_url <> "/blob/master/CHANGELOG.md",
+        "Changelog" => @repo_url <> "/blob/master/CHANGELOG.md"
       },
       files: ~w[lib priv mix.exs VERSION *.md]
     ]
@@ -61,8 +60,8 @@ defmodule Panpipe.MixProject do
 
       # Development
       {:stream_data, "~> 0.5", only: :test},
-      {:credo, "~> 1.5",   only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.24", only: :dev, runtime: false}
     ]
   end
 end

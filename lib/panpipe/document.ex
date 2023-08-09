@@ -11,7 +11,7 @@ defmodule Panpipe.Document do
     %{
       "blocks" => Enum.map(children, &Panpipe.AST.Node.to_pandoc/1),
       "meta" => meta || %{},
-      "pandoc-api-version" => Panpipe.Pandoc.api_version(),
+      "pandoc-api-version" => Panpipe.Pandoc.api_version()
     }
   end
 
@@ -33,13 +33,15 @@ end
 
 import ProtocolEx
 
-defimpl_ex Panpipe.Pandoc.Document, %{"blocks" => _, "pandoc-api-version" => _}, for: Panpipe.Pandoc.AST.Node do
+defimpl_ex Panpipe.Pandoc.Document, %{"blocks" => _, "pandoc-api-version" => _},
+  for: Panpipe.Pandoc.AST.Node do
   @moduledoc false
 
   def to_panpipe(%{"blocks" => blocks, "meta" => meta}) do
     %Panpipe.Document{
       children: blocks |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
-      meta: meta, # TODO: create a Panpipe.AST.Meta struct
+      # TODO: create a Panpipe.AST.Meta struct
+      meta: meta
     }
   end
 end
