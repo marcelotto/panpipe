@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.3.0 - 2023-08-18
 
 This version upgrades to the latest Pandoc version 3.0 with API version 1.23.
 
@@ -22,7 +22,7 @@ This version upgrades to the latest Pandoc version 3.0 with API version 1.23.
 - bug in AST traversal of tables
 
 
-[Compare v0.2.0...HEAD](https://github.com/marcelotto/panpipe/compare/v0.2.0...HEAD)
+[Compare v0.2.0...v0.3.0](https://github.com/marcelotto/panpipe/compare/v0.2.0...v0.3.0)
 
 
 

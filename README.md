@@ -23,7 +23,7 @@ The Hex package can then be installed by adding `panpipe` to your list of depend
 ```elixir
 def deps do
   [
-    {:panpipe, "~> 0.2"}
+    {:panpipe, "~> 0.3"}
   ]
 end
 ```
