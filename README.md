@@ -1,6 +1,10 @@
 # Panpipe
 
 [![Hex.pm](https://img.shields.io/hexpm/v/panpipe.svg?style=flat-square)](https://hex.pm/packages/panpipe)
+[![License](https://img.shields.io/hexpm/l/panpipe.svg)](https://github.com/marcelotto/panpipe/blob/master/LICENSE.md)
+
+[![ExUnit Tests](https://github.com/marcelotto/panpipe/actions/workflows/elixir-build-and-test.yml/badge.svg)](https://github.com/marcelotto/panpipe/actions/workflows/elixir-build-and-test.yml)
+[![Quality Checks](https://github.com/marcelotto/panpipe/actions/workflows/elixir-quality-checks.yml/badge.svg)](https://github.com/marcelotto/panpipe/actions/workflows/elixir-quality-checks.yml)
 
 
 An Elixir wrapper around [Pandoc].
