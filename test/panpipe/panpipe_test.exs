@@ -10,7 +10,9 @@ defmodule PanpipeTest do
                title: "wikilink"
              }
 
-    assert Panpipe.ast_fragment!("[[Foo|title]]", from: {:markdown, [:wikilinks_title_after_pipe]}) ==
+    assert Panpipe.ast_fragment!("[[Foo|title]]",
+             from: {:markdown, [:wikilinks_title_after_pipe]}
+           ) ==
              %Panpipe.AST.Link{
                children: [%Panpipe.AST.Str{string: "title"}],
                target: "Foo",
