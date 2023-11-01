@@ -60,7 +60,6 @@ defmodule Panpipe.MixProject do
 
       # Development
       {:stream_data, "~> 0.5", only: :test},
-      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.24", only: :dev, runtime: false}
     ]
   end
