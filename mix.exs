@@ -11,7 +11,7 @@ defmodule Panpipe.MixProject do
       version: @version,
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
-      compilers: Mix.compilers ++ [:protocol_ex],
+      compilers: Mix.compilers() ++ [:protocol_ex, :rambo],
       deps: deps(),
 
       # Hex
