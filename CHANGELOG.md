@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Added
+
+- type `t` on all AST node structs
+
+
+[Compare v0.3.0...HEAD](https://github.com/marcelotto/panpipe/compare/v0.3.0...HEAD)
+
+
+
 ## v0.3.0 - 2023-08-18
 
 This version upgrades to the latest Pandoc version 3.0 with API version 1.23.

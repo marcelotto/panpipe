@@ -130,6 +130,8 @@ defmodule Panpipe.AST.Node do
 
       defstruct unquote(fields)
 
+      @type t :: %__MODULE__{}
+
       def children(node)
       def children(%{children: children}), do: children
       def children(_), do: []
