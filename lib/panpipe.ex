@@ -79,11 +79,14 @@ defmodule Panpipe do
     It also accepts `Panpipe.AST.Node`s. `pandoc/1` will then be called with
     Pandoc AST form of the node.
 
-    By default the converted output by Pandoc always ends with a newline. This
+    By default, the converted output by Pandoc always ends with a newline. This
     can not be what you want, esp. when you convert small fragments by passing
     nodes directly. For this reason Panpipe will remove this newline by default
     for inline nodes, but keeps them on block nodes. You can control whether
     they should be removed manually with the `remove_trailing_newline` option.
+
+    To enable or disable extensions for the target format, you can use the
+    keyword options `:enable` and `:disable` with a list of extension atom names.
 
     Note: This function only works with directly passed strings or nodes. If you
     want to convert a file using the `input` option, you'll have to read the file
