@@ -23,7 +23,7 @@ defmodule Panpipe.MixProject do
       docs: [
         source_url: @repo_url,
         source_ref: "v#{@version}",
-        extras: ["CHANGELOG.md"]
+        extras: ["CHANGELOG.md", "README.md"]
       ]
     ]
   end
