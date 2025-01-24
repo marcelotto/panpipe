@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.3.1 - 2025-01-24
 
 ### Added
 
@@ -17,7 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - Replace no longer maintained Rambo dependency with Exile
 
 
-[Compare v0.3.0...HEAD](https://github.com/marcelotto/panpipe/compare/v0.3.0...HEAD)
+[Compare v0.3.0...v0.3.1](https://github.com/marcelotto/panpipe/compare/v0.3.0...v0.3.1)
 
 
 
