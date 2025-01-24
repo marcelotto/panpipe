@@ -427,7 +427,8 @@ defmodule Panpipe.AST.DefinitionList do
   end
 end
 
-defimpl_ex Panpipe.Pandoc.DefinitionList, %{"t" => "DefinitionList"}, for: Panpipe.Pandoc.AST.Node do
+defimpl_ex Panpipe.Pandoc.DefinitionList, %{"t" => "DefinitionList"},
+  for: Panpipe.Pandoc.AST.Node do
   @moduledoc false
 
   def to_panpipe(%{"c" => definitions}) do
@@ -496,7 +497,8 @@ defmodule Panpipe.AST.HorizontalRule do
   def to_pandoc(%__MODULE__{}), do: %{"t" => "HorizontalRule"}
 end
 
-defimpl_ex Panpipe.Pandoc.HorizontalRule, %{"t" => "HorizontalRule"}, for: Panpipe.Pandoc.AST.Node do
+defimpl_ex Panpipe.Pandoc.HorizontalRule, %{"t" => "HorizontalRule"},
+  for: Panpipe.Pandoc.AST.Node do
   @moduledoc false
 
   def to_panpipe(_), do: %Panpipe.AST.HorizontalRule{}
