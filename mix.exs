@@ -59,8 +59,8 @@ defmodule Panpipe.MixProject do
       {:rambo, "~> 0.2"},
 
       # Development
-      {:stream_data, "~> 0.5", only: :test},
-      {:ex_doc, "~> 0.24", only: :dev, runtime: false}
+      {:stream_data, "~> 1.1", only: :test},
+      {:ex_doc, "~> 0.36", only: :dev, runtime: false}
     ]
   end
 end
