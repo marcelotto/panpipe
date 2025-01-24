@@ -19,15 +19,18 @@ coldfusion
 comments
 commonlisp
 cpp
+crystal
 cs
 css
 curry
 d
 dart
+debiancontrol
 default
 diff
 djangotemplate
 dockerfile
+dosbat
 dot
 doxygen
 doxygenlua
@@ -41,10 +44,13 @@ fasm
 fortranfixed
 fortranfree
 fsharp
+gap
 gcc
+gdscript
 glsl
 gnuassembler
 go
+gpr
 graphql
 groovy
 hamlet
@@ -93,6 +99,7 @@ objectivec
 objectivecpp
 ocaml
 octave
+odin
 opencl
 orgmode
 pascal
@@ -110,6 +117,7 @@ purescript
 python
 qml
 r
+racket
 raku
 relaxng
 relaxngcompact
@@ -136,9 +144,12 @@ swift
 systemverilog
 tcl
 tcsh
+terraform
 texinfo
+tlaplus
 toml
 typescript
+typst
 verilog
 vhdl
 xml
@@ -147,4 +158,5 @@ xslt
 xul
 yacc
 yaml
+zig
 zsh

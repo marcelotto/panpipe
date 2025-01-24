@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ### Added
 
+- support for formats of latest Pandoc version 3.6
 - type `t` on all AST node structs
 
 ### Changed

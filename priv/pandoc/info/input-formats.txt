@@ -1,10 +1,12 @@
 biblatex
 bibtex
+bits
 commonmark
 commonmark_x
 creole
 csljson
 csv
+djot
 docbook
 docx
 dokuwiki
@@ -25,12 +27,14 @@ markdown_github
 markdown_mmd
 markdown_phpextra
 markdown_strict
+mdoc
 mediawiki
 muse
 native
 odt
 opml
 org
+pod
 ris
 rst
 rtf
@@ -39,4 +43,5 @@ textile
 tikiwiki
 tsv
 twiki
+typst
 vimwiki

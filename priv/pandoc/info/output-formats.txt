@@ -1,4 +1,6 @@
+ansi
 asciidoc
+asciidoc_legacy
 asciidoctor
 beamer
 biblatex
@@ -8,6 +10,7 @@ commonmark
 commonmark_x
 context
 csljson
+djot
 docbook
 docbook4
 docbook5
@@ -59,5 +62,6 @@ slidy
 tei
 texinfo
 textile
+typst
 xwiki
 zimwiki
