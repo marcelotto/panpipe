@@ -21,12 +21,12 @@ defmodule Panpipe.Pandoc do
   @doc """
   The version of the Pandoc runtime Panpipe is using.
   """
-  def version, do: extract_from_version_string(~R/pandoc (\d+\.\d+.*)/)
+  def version, do: extract_from_version_string(~r/pandoc (\d+\.\d+.*)/)
 
   @doc """
   The data directory of the Pandoc runtime Panpipe is using.
   """
-  def data_dir, do: extract_from_version_string(~R/Default user data directory: (.+)/)
+  def data_dir, do: extract_from_version_string(~r/Default user data directory: (.+)/)
 
   defp extract_from_version_string(regex) do
     with {:ok, version_string} <- call(version: true),
