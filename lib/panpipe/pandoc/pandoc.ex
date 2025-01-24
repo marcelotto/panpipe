@@ -128,7 +128,7 @@ defmodule Panpipe.Pandoc do
   def call(input_or_opts, opts \\ nil) do
     opts = normalize_opts(input_or_opts, opts)
 
-    with {:ok, %Rambo{status: 0} = result} <- exec(opts) do
+    with {:ok, result} <- exec(opts) do
       {:ok, output(result, opts)}
     else
       {:error, error} ->
@@ -156,19 +156,32 @@ defmodule Panpipe.Pandoc do
   defp normalize_opts(opts, nil) when is_list(opts), do: opts
 
   defp exec(opts) do
-    case Keyword.pop(opts, :input) do
-      {input_file, opts} when is_binary(input_file) ->
-        Rambo.run(@pandoc, [input_file | build_opts(opts)])
+    {args, exile_opts} =
+      case Keyword.pop(opts, :input) do
+        {input_file, opts} when is_binary(input_file) ->
+          {[input_file | build_opts(opts)], []}
 
-      {{:data, data}, opts} ->
-        Rambo.run(@pandoc, build_opts(opts), in: data)
+        {{:data, data}, opts} ->
+          {build_opts(opts), [input: List.wrap(data)]}
 
-      {nil, _} ->
-        if non_conversion_command?(opts) do
-          Rambo.run(@pandoc, build_opts(opts))
-        else
-          raise "No input specified."
-        end
+        {nil, _} ->
+          if non_conversion_command?(opts) do
+            {build_opts(opts), []}
+          else
+            raise "No input specified."
+          end
+      end
+
+    try do
+      result =
+        [@pandoc | args]
+        |> Exile.stream!(exile_opts)
+        |> Enum.into("")
+
+      {:ok, result}
+    rescue
+      e in Exile.Stream.AbnormalExit ->
+        {:error, e}
     end
   end
 
@@ -178,7 +191,7 @@ defmodule Panpipe.Pandoc do
 
   defp output(result, opts) do
     case Keyword.get(opts, :output) do
-      nil -> result.out
+      nil -> result
       _file -> nil
     end
   end

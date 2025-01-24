@@ -11,6 +11,10 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - type `t` on all AST node structs
 
+### Changed
+
+- Replace no longer maintained Rambo dependency with Exile
+
 
 [Compare v0.3.0...HEAD](https://github.com/marcelotto/panpipe/compare/v0.3.0...HEAD)
 
