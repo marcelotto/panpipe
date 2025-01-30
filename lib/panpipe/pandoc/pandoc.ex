@@ -161,6 +161,9 @@ defmodule Panpipe.Pandoc do
         {input_file, opts} when is_binary(input_file) ->
           {[input_file | build_opts(opts)], []}
 
+        {{:data, ""}, opts} ->
+          {build_opts(opts), [input: []]}
+
         {{:data, data}, opts} ->
           {build_opts(opts), [input: List.wrap(data)]}
 

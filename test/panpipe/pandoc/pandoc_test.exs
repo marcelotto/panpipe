@@ -7,6 +7,10 @@ defmodule Panpipe.PandocTest do
   @example_doc "test/fixtures/example_doc.md"
 
   describe "call" do
+    test "with empty string" do
+      assert Pandoc.call("", to: :plain) == {:ok, "\n"}
+    end
+
     test "enabling extensions" do
       assert Pandoc.call(":smile:", from: {:markdown, [:emoji]}, to: :markdown) ==
                {:ok, "😄\n"}
@@ -28,6 +32,10 @@ defmodule Panpipe.PandocTest do
 
     test "with input string" do
       assert {:ok, %{"blocks" => _}} = Pandoc.ast("# Test")
+    end
+
+    test "with empty string" do
+      assert {:ok, %{"blocks" => _}} = Pandoc.ast("")
     end
 
     test "with input string and options" do

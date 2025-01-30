@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Fixed
+
+- regression introduced in v0.3.1 that occurred when calling `Pandoc.ast/2` 
+  with an empty string
+
+
+[Compare v0.3.1...HEAD](https://github.com/marcelotto/panpipe/compare/v0.3.1...HEAD)
+
+
+
 ## v0.3.1 - 2025-01-24
 
 ### Added
