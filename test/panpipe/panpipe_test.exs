@@ -7,7 +7,12 @@ defmodule PanpipeTest do
              %Panpipe.AST.Link{
                children: [%Panpipe.AST.Str{string: "Foo"}],
                target: "Foo",
-               title: "wikilink"
+               title: "",
+               attr: %Panpipe.AST.Attr{
+                 classes: ["wikilink"],
+                 identifier: "",
+                 key_value_pairs: %{}
+               }
              }
 
     assert Panpipe.ast_fragment!("[[Foo|title]]",
@@ -16,7 +21,12 @@ defmodule PanpipeTest do
              %Panpipe.AST.Link{
                children: [%Panpipe.AST.Str{string: "title"}],
                target: "Foo",
-               title: "wikilink"
+               title: "",
+               attr: %Panpipe.AST.Attr{
+                 classes: ["wikilink"],
+                 identifier: "",
+                 key_value_pairs: %{}
+               }
              }
   end
 end

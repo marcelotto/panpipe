@@ -105,18 +105,17 @@ defmodule Panpipe.Pandoc.ConversionTest do
       ]
     }
 
-    # Pandoc adds three spaces after the bullets; see https://github.com/jgm/pandoc/issues/3981
     assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :markdown) ==
-             "-   Example1\n-   Example2\n"
+             "- Example1\n- Example2\n"
 
     assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :plain) ==
+             "- Example1\n- Example2\n"
+
+    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: {:markdown, [:four_space_rule]}) ==
              "-   Example1\n-   Example2\n"
 
-    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :markdown, tab_stop: 2) ==
-             "- Example1\n- Example2\n"
-
-    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: :plain, tab_stop: 2) ==
-             "- Example1\n- Example2\n"
+    assert Panpipe.Pandoc.Conversion.convert(bullet_list, to: {:plain, [:four_space_rule]}) ==
+             "-   Example1\n-   Example2\n"
   end
 
   test "AST.DefinitionList" do
