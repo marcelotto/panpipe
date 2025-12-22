@@ -3,7 +3,23 @@ import ProtocolEx
 defprotocol_ex Panpipe.Pandoc.AST.Node do
   @moduledoc false
 
-  def to_panpipe(node)
+  # Fallback implementation.
+  #
+  # Keep this in the protocol itself (instead of a separate `defimpl_ex`) to
+  # avoid ProtocolEx compile-time callback verification ordering issues.
+  def to_panpipe(node) do
+    case node do
+      %{"blocks" => blocks, "pandoc-api-version" => _} = doc ->
+        %Panpipe.Document{
+          children: Enum.map(blocks, &Panpipe.Pandoc.AST.Node.to_panpipe/1),
+          # TODO: create a Panpipe.AST.Meta struct
+          meta: Map.get(doc, "meta")
+        }
+
+      other ->
+        raise "no Panpipe conversion for pandoc node: #{inspect(other)}"
+    end
+  end
 end
 
 ################################################################################

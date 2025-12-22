@@ -30,18 +30,3 @@ defmodule Panpipe.Document do
     end
   end
 end
-
-import ProtocolEx
-
-defimpl_ex Panpipe.Pandoc.Document, %{"blocks" => _, "pandoc-api-version" => _},
-  for: Panpipe.Pandoc.AST.Node do
-  @moduledoc false
-
-  def to_panpipe(%{"blocks" => blocks, "meta" => meta}) do
-    %Panpipe.Document{
-      children: blocks |> Enum.map(&Panpipe.Pandoc.AST.Node.to_panpipe/1),
-      # TODO: create a Panpipe.AST.Meta struct
-      meta: meta
-    }
-  end
-end
